@@ -1,0 +1,356 @@
+#include "./CFmMain.h"
+
+#include <iostream>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QByteArray>
+#include <functional>
+#include <windows.h>
+#include <QVariantList>
+#include <QStandardItemModel>
+#include <QJsonArray>
+
+#ifndef _HIKHANDLE_H_
+#include "./CHikHandle.h"
+#endif // !_HIKHANDLE_H_
+
+
+
+CFmMain::CFmMain(QWidget* parent /* = Q_NULLPTR */)
+{
+	ui.setupUi(this);
+	/*\ 初始化控件风格 \*/
+	this->InitControlStyle();
+	/*\ 绑定信号和槽 \*/
+	this->BindSignalAndSlot();
+	/*\ 初始化成员变量 \*/
+	this->InitVarInfo();
+}
+
+CFmMain::~CFmMain()
+{
+	/*\ 释放成员变量 \*/
+	this->DelVarInfo();
+}
+
+/****************************************!
+*@brief  初始化控件风格
+*@author Jinzi
+*@date   2019/10/26 11:42:45
+*@param[in]
+*@param[out]
+*@return
+****************************************/
+void CFmMain::InitControlStyle()
+{
+
+}
+/****************************************!
+*@brief  绑定信号和槽
+*@author Jinzi
+*@date   2019/10/26 11:42:55
+*@param[in]
+*@param[out]
+*@return
+****************************************/
+void CFmMain::BindSignalAndSlot()
+{
+	/*\ 添加用户按钮 \*/
+	connect(ui.m_btnAddUser, &QPushButton::clicked, this, &CFmMain::BtnAddUserClickedSlot);
+}
+/****************************************!
+*@brief  初始化成员变量
+*@author Jinzi
+*@date   2019/10/26 11:43:08
+*@param[in]
+*@param[out]
+*@return
+****************************************/
+void CFmMain::InitVarInfo()
+{
+
+}
+/****************************************!
+*@brief  释放成员变量
+*@author Jinzi
+*@date   2019/10/26 11:43:34
+*@param[in]
+*@param[out]
+*@return
+****************************************/
+void CFmMain::DelVarInfo()
+{
+
+}
+/****************************************!
+*@brief  设置服务信息
+*@author Jinzi
+*@date   2019/10/26 11:46:09
+*@param[in]
+   _SvrInfo	:	服务信息
+*@param[out]
+*@return
+****************************************/
+void CFmMain::SetSvrInfo(SSvrInfo _SvrInfo)
+{
+	m_opSvrInfo = _SvrInfo;
+}
+
+/****************************************!
+*@brief  请求服务器获取用户信息
+*@author Jinzi
+*@date   2019/10/26 13:21:37
+*@param[in]
+*@param[out]
+*@return
+****************************************/
+void CFmMain::GetUserInfo()
+{
+	QString qsUrl = "http://" + m_opSvrInfo.m_qsSvrIp + ":" + m_opSvrInfo.m_qsSSvrPort + "/patroluser/getPatrolUserList";
+	QJsonObject jsonReqData;
+	QJsonDocument jsonDocument(jsonReqData);
+	QByteArray reqData(jsonDocument.toJson());
+	m_opHttpInstance.HttpPostRequest(qsUrl.toLocal8Bit().data(), reqData,
+		std::bind(&CFmMain::GetUserInfoCallBack, this, std::placeholders::_1));
+}
+
+/****************************************!
+*@brief  从服务获取门禁信息并显示
+*@author Jinzi
+*@date   2019/10/26 13:22:40
+*@param[in]
+*@param[out]
+*@return
+****************************************/
+void CFmMain::GetMenJinInfo()
+{
+	QString qsUrl = "http://" + m_opSvrInfo.m_qsSvrIp + ":" + m_opSvrInfo.m_qsSSvrPort + "/interProvide/getAllRkeInfo";
+	QJsonObject jsonReqData;
+	QJsonDocument jsonDocument(jsonReqData);
+	QByteArray reqData(jsonDocument.toJson());
+	m_opHttpInstance.HttpPostRequest(qsUrl.toLocal8Bit().data(), reqData,
+		std::bind(&CFmMain::GetMenJinInfoCallBack, this, std::placeholders::_1));
+}
+
+/****************************************!
+*@brief  获取用户信息回调数据处理函数
+*@author Jinzi
+*@date   2019/10/26 13:38:43
+*@param[in]
+   _opReqplay	:	需要处理的数据（服务器返回的数据）
+*@param[out]
+*@return
+****************************************/
+void CFmMain::GetUserInfoCallBack(QNetworkReply* _opReqplay)
+{
+	if (_opReqplay == nullptr)
+	{
+		MessageBoxA(nullptr, "服务器响应数据为空", "提示", MB_OK | MB_ICONWARNING);
+		return;
+	}
+	// 保存接受的数据;（图片名称imgName）
+	QByteArray replyContent = _opReqplay->readAll();
+	QJsonObject jsonResData = QJsonDocument::fromJson(replyContent).object();
+	if (jsonResData.value("code").toString() == 0)
+	{
+		QJsonObject::iterator it = jsonResData.find("data");
+		QJsonValueRef arrData = it.value();
+		QVariantList jsonList = arrData.toArray().toVariantList();
+		/*\ 判断存储用户信息的vector容器 不为空 先清空 \*/
+		if (!m_vecUserAllInfo.empty())
+		{
+			m_vecUserAllInfo.clear();
+		}
+		/*\ 将用户信息存储起来 \*/
+		for (int i = 0; i < jsonList.count(); i++)
+		{
+			QVariantMap map = jsonList[i].toMap();
+			SUserInfo* opSvrInfo = new SUserInfo();
+			opSvrInfo->m_qsUserId = map.value("id").toString();
+			opSvrInfo->m_qsUserName = map.value("userName").toString();
+			opSvrInfo->m_qsUserJobNum = map.value("jobNumber").toString();
+			opSvrInfo->m_qsUserCardNum = map.value("cardNumber").toString();
+			m_vecUserAllInfo.push_back(*opSvrInfo);
+		}
+	}
+	/*\ 将查询的用户信息显示到控件中 \*/
+	this->ShowAllUserToTV();
+}
+
+/****************************************!
+*@brief  显示所有用户信息到tableview
+*@author Jinzi
+*@date   2019/10/26 13:47:51
+*@param[in]
+*@param[out]
+*@return
+****************************************/
+void CFmMain::ShowAllUserToTV()
+{
+	if (m_vecUserAllInfo.size() < 0)
+	{
+		MessageBoxA(nullptr, "查询所有用户信息失败", "提示", MB_OK | MB_ICONERROR);
+		return;
+	}
+	QStandardItemModel* opModelRet = (QStandardItemModel*)ui.m_tvUserInfo->model();
+	if (opModelRet != nullptr)
+	{
+		opModelRet->clear();
+	}
+	QStandardItemModel* opModel = new QStandardItemModel();
+
+	opModel->setColumnCount(3);
+	opModel->setHeaderData(0, Qt::Horizontal, QString::fromLocal8Bit("卡号"));
+	opModel->setHeaderData(1, Qt::Horizontal, QString::fromLocal8Bit("工号"));
+	opModel->setHeaderData(2, Qt::Horizontal, QString::fromLocal8Bit("姓名"));
+	/*\ 设置表的属性 \*/
+	ui.m_tvUserInfo->setModel(opModel);
+	/*\ 设置左对齐 \*/
+	ui.m_tvUserInfo->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
+	//表列随着表格变化而自适应变化
+	ui.m_tvUserInfo->horizontalHeader()->sectionResizeMode(QHeaderView::Stretch);
+	//表行随着表格变化而自适应变化
+	ui.m_tvUserInfo->verticalHeader()->sectionResizeMode(QHeaderView::Stretch);
+
+	for (int i = 0; i < m_vecUserAllInfo.size(); i++)
+	{
+		/*\ 卡号 \*/
+		opModel->setItem(i, 0, new QStandardItem(m_vecUserAllInfo[i].m_qsUserCardNum.toLocal8Bit().data()));
+		/*\ 工号 \*/
+		opModel->setItem(i, 1, new QStandardItem(m_vecUserAllInfo[i].m_qsUserJobNum.toLocal8Bit().data()));
+		/*\ 姓名 \*/
+		opModel->setItem(i, 2, new QStandardItem(QString::fromLocal8Bit(m_vecUserAllInfo[i].m_qsUserName.toLocal8Bit().data())));
+		for (int j = 0; j < 3; j++)
+		{
+			//设置字符位置 
+			opModel->item(i, j)->setTextAlignment(Qt::AlignCenter);
+		}
+		//设置字符颜色 
+		opModel->item(i, 0)->setForeground(QBrush(QColor(255, 0, 0)));
+	}
+}
+
+/****************************************!
+*@brief  显示所有门禁信息到table view
+*@author Jinzi
+*@date   2019/10/26 14:02:39
+*@param[in]
+*@param[out]
+*@return
+****************************************/
+void CFmMain::ShowAllMenJinToTV()
+{
+	if (m_vecMenJinInfo.size() < 0)
+	{
+		MessageBoxA(nullptr, "查询所有门禁信息失败", "提示", MB_OK | MB_ICONERROR);
+		return;
+	}
+	QStandardItemModel* opModelRet = (QStandardItemModel*)ui.m_tvMenJinInfo->model();
+	if (opModelRet != nullptr)
+	{
+		opModelRet->clear();
+	}
+	QStandardItemModel* opModel = new QStandardItemModel();
+
+	opModel->setColumnCount(4);
+	opModel->setHeaderData(0, Qt::Horizontal, QString::fromLocal8Bit("站点"));
+	opModel->setHeaderData(1, Qt::Horizontal, QString::fromLocal8Bit("Ip"));
+	opModel->setHeaderData(2, Qt::Horizontal, QString::fromLocal8Bit("登录状态"));
+	opModel->setHeaderData(3, Qt::Horizontal, QString::fromLocal8Bit("下发状态"));
+	/*\ 设置表的属性 \*/
+	ui.m_tvMenJinInfo->setModel(opModel);
+	/*\ 设置左对齐 \*/
+	ui.m_tvMenJinInfo->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
+	//表列随着表格变化而自适应变化
+	ui.m_tvMenJinInfo->horizontalHeader()->sectionResizeMode(QHeaderView::Stretch);
+	//表行随着表格变化而自适应变化
+	ui.m_tvMenJinInfo->verticalHeader()->sectionResizeMode(QHeaderView::Stretch);
+	for (int i = 0; i < m_vecMenJinInfo.size(); i++)
+	{
+		/*\ 站点名称 \*/
+		opModel->setItem(i, 0, new QStandardItem(QString::fromLocal8Bit(m_vecMenJinInfo[i].m_qsMenJinName.toLocal8Bit().data())));
+		/*\ Ip \*/
+		opModel->setItem(i, 1, new QStandardItem(m_vecMenJinInfo[i].m_qsMenJinIp.toLocal8Bit().data()));
+		/*\ 是否登录成功 \*/
+		if (m_vecMenJinInfo[i].m_bIsLogin)
+		{
+			opModel->setItem(i, 2, new QStandardItem(QString::fromLocal8Bit("登录成功")));
+		}
+		else
+		{
+			opModel->setItem(i, 2, new QStandardItem(QString::fromLocal8Bit("登录失败")));
+		}
+		/*\ 是否下发成功 \*/
+		opModel->setItem(i, 3, new QStandardItem(QString::fromLocal8Bit("未下发")));
+		for (int j = 0; j < 4; j++)
+		{
+			//设置字符位置 
+			opModel->item(i, j)->setTextAlignment(Qt::AlignCenter);
+		}
+		//设置字符颜色 
+		opModel->item(i, 0)->setForeground(QBrush(QColor(255, 0, 0)));
+	}
+}
+
+/****************************************!
+*@brief  获取门禁数据的处理函数
+*@author Jinzi
+*@date   2019/10/26 14:09:29
+*@param[in]
+   _opReqplay	:	服务返回的数据
+*@param[out]
+*@return
+****************************************/
+void CFmMain::GetMenJinInfoCallBack(QNetworkReply* _opReqplay)
+{
+	if (_opReqplay == nullptr)
+	{
+		MessageBoxA(nullptr, "服务器响应数据为空", "提示", MB_OK | MB_ICONWARNING);
+		return;
+	}
+	// 保存接受的数据;（图片名称imgName）
+	QByteArray replyContent = _opReqplay->readAll();
+	QJsonObject jsonResData = QJsonDocument::fromJson(replyContent).object();
+	if (jsonResData.value("code").toString() == 0)
+	{
+		QJsonObject::iterator it = jsonResData.find("data");
+		QJsonValueRef arrData = it.value();
+		QVariantList jsonList = arrData.toArray().toVariantList();
+		/*\ 判断存储用户信息的vector容器 不为空 先清空 \*/
+		if (!m_vecMenJinInfo.empty())
+		{
+			m_vecMenJinInfo.clear();
+		}
+		/*\ 将用户信息存储起来 \*/
+		for (int i = 0; i < jsonList.count(); i++)
+		{
+			QVariantMap map = jsonList[i].toMap();
+			SMenJinInfo* opMenJinInfo = new SMenJinInfo();
+			opMenJinInfo->m_qsMenJinIp = map.value("rkeIp").toString();
+			opMenJinInfo->m_qsMenJinName = map.value("stationName").toString();
+			opMenJinInfo->m_qsMenJinUser = map.value("strUser").toString();
+			opMenJinInfo->m_qsMenJinPass = map.value("strPsw").toString();
+			opMenJinInfo->m_qsMenJinPort = "8000";
+			opMenJinInfo->m_iLoginHandle = -1;
+			opMenJinInfo->m_bIsLogin = false;
+			m_vecMenJinInfo.push_back(*opMenJinInfo);
+		}
+	}
+	/*\ 进行门禁登录 \*/
+	CHikHandle::GetInstance()->MenJinLogin(m_vecMenJinInfo);
+	/*\ 显示门禁信息 \*/
+	this->ShowAllMenJinToTV();
+}
+
+ /****************************************!
+ *@brief  添加用户按钮点击事件
+ *@author Jinzi
+ *@date   2019/10/26 15:28:45
+ *@param[in]  
+ *@param[out] 
+ *@return     
+ ****************************************/
+void CFmMain::BtnAddUserClickedSlot()
+{
+	m_fmAddUser.show();
+}

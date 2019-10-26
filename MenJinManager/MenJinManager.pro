@@ -6,11 +6,13 @@ TEMPLATE = app
 TARGET = MenJinManager
 DESTDIR = ../bin
 CONFIG += debug
-LIBS += -L"."
+LIBS += -L"../../bin" \
+    -l$(Qt_LIBS_) \
+    -l/"$(INHERIT)/" \
+    -lHCNetSDK
 DEPENDPATH += .
 MOC_DIR += .
 OBJECTS_DIR += debug
-FORMS += ./ui/CMenJinManager.ui 
 UI_DIR += .
 RCC_DIR += .
 include(MenJinManager.pri)

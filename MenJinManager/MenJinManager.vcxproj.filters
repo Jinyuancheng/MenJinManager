@@ -34,9 +34,27 @@
     <ClCompile Include="Utils\utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MenJinManager\CFmMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MenJinManager\CHttpRequest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MenJinManager\CHikHandle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MenJinManager\CFmAddUser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="ui\CMenJinManager.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="ui\fmMain.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="ui\fmAddUser.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>
@@ -47,6 +65,12 @@
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="MenJinManager\CMenJinManager.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="MenJinManager\CFmMain.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="MenJinManager\CFmAddUser.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -61,6 +85,30 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Public\PubDef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MenJinManager\CHttpRequest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="uic\ui_fmMain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HIKSDK\DataType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HIKSDK\DecodeCardSdk.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HIKSDK\HCNetSDK.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HIKSDK\plaympeg4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MenJinManager\CHikHandle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="uic\ui_fmAddUser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

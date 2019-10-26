@@ -69,13 +69,14 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <AdditionalIncludeDirectories>E:\QT_5.12.3\5.12.3\msvc2017\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\QT_5.12.3\5.12.3\msvc2017\include\QtNetwork;E:\QT_5.12.3\5.12.3\msvc2017\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>E:\QT_5.12.3\5.12.3\msvc2017\bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>G:\Jinzi_WorkSpace\QT\MenJinManager\bin;E:\QT_5.12.3\5.12.3\msvc2017\bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(Qt_LIBS_);%(AdditionalDependencies);HCNetSDK.lib;</AdditionalDependencies>
     </Link>
     <QtUic>
       <QtUicDir>.\uic\</QtUicDir>
@@ -87,19 +88,24 @@
       <DebugInformationFormat />
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <AdditionalIncludeDirectories>E:\QT_5.12.3\5.12.3\msvc2017\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\QT_5.12.3\5.12.3\msvc2017\include\QtNetwork;E:\QT_5.12.3\5.12.3\msvc2017\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>E:\QT_5.12.3\5.12.3\msvc2017\bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>G:\Jinzi_WorkSpace\QT\MenJinManager\bin;E:\QT_5.12.3\5.12.3\msvc2017\bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(Qt_LIBS_);%(AdditionalDependencies);HCNetSDK.lib;</AdditionalDependencies>
     </Link>
     <QtUic>
       <QtUicDir>.\uic\</QtUicDir>
     </QtUic>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="MenJinManager\CFmAddUser.cpp" />
+    <ClCompile Include="MenJinManager\CHikHandle.cpp" />
+    <ClCompile Include="MenJinManager\CFmMain.cpp" />
+    <ClCompile Include="MenJinManager\CHttpRequest.cpp" />
     <ClCompile Include="MenJinManager\CMenJinManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Utils\utils.cpp" />
@@ -108,14 +114,26 @@
     <QtMoc Include="MenJinManager\CMenJinManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <QtUic Include="ui\fmAddUser.ui" />
+    <QtUic Include="ui\fmMain.ui" />
     <QtUic Include="ui\CMenJinManager.ui" />
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="ui\CMenJinManager.qrc" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="MenJinManager\CFmMain.h" />
+    <QtMoc Include="MenJinManager\CFmAddUser.h" />
+    <ClInclude Include="MenJinManager\CHikHandle.h" />
+    <ClInclude Include="HIKSDK\DataType.h" />
+    <ClInclude Include="HIKSDK\DecodeCardSdk.h" />
+    <ClInclude Include="HIKSDK\HCNetSDK.h" />
+    <ClInclude Include="HIKSDK\plaympeg4.h" />
+    <ClInclude Include="MenJinManager\CHttpRequest.h" />
     <ClInclude Include="Public\PubDef.h" />
     <ClInclude Include="uic\ui_CMenJinManager.h" />
+    <ClInclude Include="uic\ui_fmAddUser.h" />
+    <ClInclude Include="uic\ui_fmMain.h" />
     <ClInclude Include="Utils\template.h" />
     <ClInclude Include="Utils\utils.h" />
   </ItemGroup>

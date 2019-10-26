@@ -7,6 +7,11 @@
 #include "../Public/PubDef.h"
 #endif
 
+#ifndef _FMMAIN_H_
+#include "./CFmMain.h"
+#endif // !_FMMAIN_H_
+
+
 class CMenJinManager : public QMainWindow
 {
 	Q_OBJECT
@@ -29,4 +34,5 @@ public slots:
 private:
 	Ui::CMenJinManagerClass ui;				/*\ 界面操作信息 \*/
 	SSvrInfo*				m_opSvrInfo;	/*\ 用来存储用户输入的服务信息 \*/
+	CFmMain*				m_opFmMain;		/*\ 主窗体 \*/
 };

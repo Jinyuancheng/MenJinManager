@@ -7,8 +7,26 @@
 message("You are running qmake on a generated .pro file. This may not work!")
 
 
-HEADERS += ./CMenJinManager.h
-SOURCES += ./main.cpp \
-    ./CMenJinManager.cpp
-FORMS += ./CMenJinManager.ui
-RESOURCES += CMenJinManager.qrc
+HEADERS += ./MenJinManager/CHikHandle.h \
+    ./HIKSDK/DataType.h \
+    ./HIKSDK/DecodeCardSdk.h \
+    ./HIKSDK/HCNetSDK.h \
+    ./HIKSDK/plaympeg4.h \
+    ./MenJinManager/CHttpRequest.h \
+    ./Public/PubDef.h \
+    ./uic/ui_CMenJinManager.h \
+    ./uic/ui_fmMain.h \
+    ./Utils/template.h \
+    ./Utils/utils.h \
+    ./MenJinManager/CMenJinManager.h \
+    ./MenJinManager/CFmMain.h
+SOURCES += ./MenJinManager/CHikHandle.cpp \
+    ./MenJinManager/CFmMain.cpp \
+    ./MenJinManager/CHttpRequest.cpp \
+    ./MenJinManager/CMenJinManager.cpp \
+    ./main.cpp \
+    ./Utils/utils.cpp
+FORMS += ./ui/fmMain.ui \
+    ./ui/CMenJinManager.ui \
+    ./ui/fmAddUser.ui
+RESOURCES += ui/CMenJinManager.qrc

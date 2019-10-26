@@ -2,6 +2,8 @@
 #include <QString>
 #include <windows.h>
 
+//#include ""
+
 #ifndef _UTILS_H_
 #include "../Utils/utils.h"
 #endif // !_UTILS_H_
@@ -95,6 +97,14 @@ void CMenJinManager::BtnOkClickSlotFunc()
 	m_opSvrInfo->m_qsSvrIp = ui.m_editIp->text();
 	m_opSvrInfo->m_qsSSvrPort = ui.m_editSPort->text();
 	m_opSvrInfo->m_qsCSvrPort = ui.m_editCPort->text();
+	/*\ 将输入存储到主窗口中 \*/
+	m_opFmMain->SetSvrInfo(*m_opSvrInfo);
+	/*\ 得到服务器中存储的用户信息，保存并显示 \*/
+	m_opFmMain->GetUserInfo();
+	/*\ 得到服务器中门禁的信息 保存 登录并显示 \*/
+	m_opFmMain->GetMenJinInfo();
+	/*\ 显示窗口 \*/
+	m_opFmMain->show();
 	this->close();
 }
 
@@ -109,6 +119,7 @@ void CMenJinManager::BtnOkClickSlotFunc()
 void CMenJinManager::InitVarInfo()
 {
 	m_opSvrInfo = new SSvrInfo();
+	m_opFmMain = new CFmMain();
 }
 
  /****************************************!
@@ -124,5 +135,9 @@ void CMenJinManager::DelVarInfo()
 	if (m_opSvrInfo != nullptr)
 	{
 		delete m_opSvrInfo;
+	}
+	if (m_opFmMain != nullptr)
+	{
+		delete m_opFmMain;
 	}
 }
