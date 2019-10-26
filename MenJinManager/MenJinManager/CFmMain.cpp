@@ -465,6 +465,8 @@ void CFmMain::BtnChangeUserClickedSlot()
 	m_fmChangeUser.SetChangeUserInfo(m_vecUserAllInfo[iIndex]);
 	/*\ 设置服务器Ip等信息 \*/
 	m_fmChangeUser.SetSvrInfo(m_opSvrInfo);
+	/*\ 显示未修改前的数据 \*/
+	//m_fmChangeUser.ShowAfterChangeData();
 	/*\ 显示页面 \*/
 	m_fmChangeUser.show();
 }

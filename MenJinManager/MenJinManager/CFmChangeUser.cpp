@@ -8,6 +8,9 @@
 #include <QJsonDocument>
 #include <QByteArray>
 #include <QJsonArray>
+#include <QImageReader>
+#include <QBuffer>
+#include <QMovie>
 
 #ifndef _UTILS_H_
 #include "../Utils/utils.h"
@@ -298,18 +301,27 @@ void CFmChangeUser::ShowAfterChangeData()
 	ui.m_editJobNum->setText(m_oUserInfo.m_qsUserJobNum);
 	/*\ 显示图片到label中 \*/
 	QPixmap pix;
-	QImage* image = new QImage;//filename，图片的路径名字
+	QImage image;
+	/*\ 图片的url地址 \*/
+	QString qsPicUrl = "http://" + m_oSvrInfo.m_qsSvrIp + ":" +
+		m_oSvrInfo.m_qsCSvrPort + "/headinfo/" + m_oUserInfo.m_qsPicPath.toLocal8Bit().data();
+	/*\ 返回图片数据 \*/
+	QByteArray oSvrPicData = m_oHttpInstance.HttpGetPicDataWithUrl(qsPicUrl.toLocal8Bit().data());
+	QString filename("1.jpg");
+	pix.loadFromData(oSvrPicData);
+	pix.save(filename);//保存图片
 
+	//可以在onpaint中 用QPixmap 显示currentPicture，则这种方法则不需要保存
 
+	//显示图片，
+	QMovie *move = new QMovie(filename);
+	ui.m_lbPic->setMovie(move);
+	move->start();
 
-
-	//if (!image->load())
-	//{
-	//	MessageBoxA(nullptr, "图片加载失败", "提示", MB_OK | MB_ICONERROR);
-	//	return;
-	//}
+	//QBuffer buffer(&oSvrPicData);
+	//image.save(&buffer, "jpg", 20);
 	///*\ 显示图片 \*/
-	//ui.m_lbPic->setPixmap(pix.fromImage(*image));
+	//ui.m_lbPic->setPixmap(pix.fromImage(image));
 	///*\ 让图片充满整个label \*/
 	//ui.m_lbPic->setScaledContents(true);
 }
