@@ -48,6 +48,7 @@ void CFmChangeUser::InitControlStyle()
 	/*\ 隐藏卡号那一列 \*/
 	ui.label->setVisible(false);
 	ui.m_editCardNum->setVisible(false);
+	/*\ 显示label等原来的数据 \*/
 }
 
 /****************************************!
@@ -281,4 +282,34 @@ void CFmChangeUser::SvrRetChangeUserInfoHandle(QNetworkReply* _opReplay)
 		MessageBoxA(nullptr, "修改用户失败", "提示", MB_OK | MB_ICONERROR);
 		return;
 	}
+}
+
+ /****************************************!
+ *@brief  修改 用户信息之前的数据显示
+ *@author Jinzi
+ *@date   2019/10/26 19:50:14
+ *@param[in]  
+ *@param[out] 
+ *@return     
+ ****************************************/
+void CFmChangeUser::ShowAfterChangeData()
+{
+	ui.m_editName->setText(m_oUserInfo.m_qsUserName);
+	ui.m_editJobNum->setText(m_oUserInfo.m_qsUserJobNum);
+	/*\ 显示图片到label中 \*/
+	QPixmap pix;
+	QImage* image = new QImage;//filename，图片的路径名字
+
+
+
+
+	//if (!image->load())
+	//{
+	//	MessageBoxA(nullptr, "图片加载失败", "提示", MB_OK | MB_ICONERROR);
+	//	return;
+	//}
+	///*\ 显示图片 \*/
+	//ui.m_lbPic->setPixmap(pix.fromImage(*image));
+	///*\ 让图片充满整个label \*/
+	//ui.m_lbPic->setScaledContents(true);
 }

@@ -34,6 +34,8 @@ private:
 	void ClearEditInfo();
 	/*\ 初始化成员变量的信息 \*/
 	void InitVarInfo();
+	/*\ 显示 未修改前数据 \*/
+	void ShowAfterChangeData();
 public:
 	/*\ 设置服务器信息 \*/
 	void SetSvrInfo(SSvrInfo _oSvrInfo);

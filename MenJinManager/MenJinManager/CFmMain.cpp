@@ -397,9 +397,9 @@ void CFmMain::BtnDelUserClickedSlot()
 	{
 		jsonArray.append(m_vecUserAllInfo[index.row()].m_qsUserId);
 	}
-	QString qsUrl = "http://" + m_opSvrInfo.m_qsSvrIp + ":" + m_opSvrInfo.m_qsSSvrPort + "/patroluser/deletePatrolUser";
+	QString qsUrl = "http://" + m_opSvrInfo.m_qsSvrIp + ":" + m_opSvrInfo.m_qsSSvrPort + "/patroluser/deletePatroUserList";
 	QJsonObject jsonReqData;
-	jsonReqData.insert("id", jsonArray);
+	jsonReqData.insert("idList", jsonArray);
 	QJsonDocument jsonDocument(jsonReqData);
 	QByteArray reqData(jsonDocument.toJson());
 	m_opHttpInstance.HttpPostRequest(qsUrl.toLocal8Bit().data(), reqData,
