@@ -51,12 +51,16 @@ public:
 	void GetUserInfoCallBack(QNetworkReply* _opReqplay);
 	/*\ 请求http服务门禁存储数据 数据回调调用函数 \*/
 	void GetMenJinInfoCallBack(QNetworkReply* _opReqplay);
+	/*\ 删除用户信息的数据回调处理函数 \*/
+	void DelUserInfoCallBack(QNetworkReply* _opReqplay);
 public:
 	/*\ 设置服务信息 \*/
 	void SetSvrInfo(SSvrInfo _SvrInfo);
 public slots:
 	/*\ 添加用户按钮点击事件 \*/
 	void BtnAddUserClickedSlot();
+	/*\ 删除用户按钮点击事件 \*/
+	void BtnDelUserClickedSlot();
 private:
 	Ui::CFmMain				ui;					/*\ ui界面操作 \*/
 	SSvrInfo				m_opSvrInfo;		/*\ 存储服务信息 \*/

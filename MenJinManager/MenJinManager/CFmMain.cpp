@@ -10,11 +10,12 @@
 #include <QStandardItemModel>
 #include <QJsonArray>
 #include <thread>
+#include <QModelIndexList>
+#include <QList>
 
 #ifndef _HIKHANDLE_H_
 #include "./CHikHandle.h"
 #endif // !_HIKHANDLE_H_
-
 
 CFmMain::CFmMain(QWidget* parent /* = Q_NULLPTR */)
 {
@@ -73,6 +74,8 @@ void CFmMain::BindSignalAndSlot()
 {
 	/*\ 添加用户按钮 \*/
 	connect(ui.m_btnAddUser, &QPushButton::clicked, this, &CFmMain::BtnAddUserClickedSlot);
+	/*\ 删除用户按钮 \*/
+	connect(ui.m_btnDelUser, &QPushButton::clicked, this, &CFmMain::BtnDelUserClickedSlot);
 }
 /****************************************!
 *@brief  初始化成员变量
@@ -161,7 +164,7 @@ void CFmMain::GetUserInfoCallBack(QNetworkReply* _opReqplay)
 {
 	if (_opReqplay == nullptr)
 	{
-		MessageBoxA(nullptr, "服务器响应数据为空", "提示", MB_OK | MB_ICONWARNING);
+		MessageBoxA(nullptr, "服务器响应数据为空", "提示", MB_OK | MB_ICONERROR);
 		return;
 	}
 	// 保存接受的数据;（图片名称imgName）
@@ -321,7 +324,7 @@ void CFmMain::GetMenJinInfoCallBack(QNetworkReply* _opReqplay)
 {
 	if (_opReqplay == nullptr)
 	{
-		MessageBoxA(nullptr, "服务器响应数据为空", "提示", MB_OK | MB_ICONWARNING);
+		MessageBoxA(nullptr, "服务器响应数据为空", "提示", MB_OK | MB_ICONERROR);
 		return;
 	}
 	// 保存接受的数据;（图片名称imgName）
@@ -371,4 +374,60 @@ void CFmMain::BtnAddUserClickedSlot()
 	/*\ 将服务信息存储到fmAddUser中 \*/
 	m_fmAddUser.SetSvrInfo(m_opSvrInfo);
 	m_fmAddUser.show();
+}
+
+ /****************************************!
+ *@brief  删除按钮的点击事件
+ *@author Jinzi
+ *@date   2019/10/26 17:51:16
+ *@param[in]  
+ *@param[out] 
+ *@return     
+ ****************************************/
+void CFmMain::BtnDelUserClickedSlot()
+{
+	/*\ 判断用户都选择的哪个要删除的用户 \*/
+	QModelIndexList selected = ui.m_tvUserInfo->selectionModel()->selectedRows();
+	QJsonArray jsonArray;
+	foreach(const QModelIndex & index, selected)
+	{
+		jsonArray.append(m_vecUserAllInfo[index.row()].m_qsUserId);
+	}
+	QString qsUrl = "http://" + m_opSvrInfo.m_qsSvrIp + ":" + m_opSvrInfo.m_qsSSvrPort + "/patroluser/deletePatrolUser";
+	QJsonObject jsonReqData;
+	jsonReqData.insert("id", jsonArray);
+	QJsonDocument jsonDocument(jsonReqData);
+	QByteArray reqData(jsonDocument.toJson());
+	m_opHttpInstance.HttpPostRequest(qsUrl.toLocal8Bit().data(), reqData,
+		std::bind(&CFmMain::DelUserInfoCallBack, this, std::placeholders::_1));
+}
+
+ /****************************************!
+ *@brief  删除用户信息的处理函数（服务器回调数据）
+ *@author Jinzi
+ *@date   2019/10/26 18:08:22
+ *@param[in]  
+ *@param[out] 
+ *@return     
+ ****************************************/
+void CFmMain::DelUserInfoCallBack(QNetworkReply* _opReqplay)
+{
+	if (_opReqplay == nullptr)
+	{
+		MessageBoxA(nullptr, "服务器响应数据为空", "提示", MB_OK | MB_ICONERROR);
+		return;
+	}
+	// 保存接受的数据;（图片名称imgName）
+	QByteArray replyContent = _opReqplay->readAll();
+	QJsonObject jsonResData = QJsonDocument::fromJson(replyContent).object();
+	if (jsonResData.value("code").toString() == 0)
+	{
+		MessageBoxA(nullptr, "删除用户成功", "提示", MB_OK);
+		return;
+	}
+	else
+	{
+		MessageBoxA(nullptr, "删除用户失败", "提示", MB_OK | MB_ICONERROR);
+		return;
+	}
 }

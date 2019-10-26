@@ -137,6 +137,10 @@
     <ClInclude Include="Utils\template.h" />
     <ClInclude Include="Utils\utils.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="MenJinManager.pri" />
+    <None Include="MenJinManager.pro" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
     <Import Project="$(QtMsBuild)\qt.targets" />
