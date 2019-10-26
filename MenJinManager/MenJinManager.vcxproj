@@ -114,6 +114,7 @@
     <QtRcc Include="ui\CMenJinManager.qrc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Public\PubDef.h" />
     <ClInclude Include="uic\ui_CMenJinManager.h" />
     <ClInclude Include="Utils\template.h" />
     <ClInclude Include="Utils\utils.h" />

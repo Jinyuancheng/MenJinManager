@@ -1,6 +1,11 @@
 #include "CMenJinManager.h"
 #include <QString>
 
+#ifndef _UTILS_H_
+#include "../Utils/utils.h"
+#endif // !_UTILS_H_
+
+
 CMenJinManager::CMenJinManager(QWidget* parent)
 	: QMainWindow(parent)
 {
@@ -57,5 +62,6 @@ void CMenJinManager::BindSignalAndSlot()
  ****************************************/
 void CMenJinManager::BtnOkClickSlotFunc()
 {
+	/*\ 获取用户输入 \*/
 
 }
