@@ -167,7 +167,7 @@ bool CUtils::JuagePortLegal(QString& _qsPort)
 }
 
  /****************************************!
- *@brief  判断数字是否是从1到9999以内的
+ *@brief  判断数字是否是从000000到0000000000以内的
  *@author Jinzi
  *@date   2019/09/29 14:03:37
  *@param[in]  
@@ -178,7 +178,7 @@ bool CUtils::JuagePortLegal(QString& _qsPort)
 bool CUtils::JuageNumberLegal(QString& _qsNumber)
 {
 	bool bIsSucc = false;
-	QRegExp oRegExpNum("(^[1-9]$)|(^[1-9][0-9]$)|(^[1-9][0-9][0-9]$)|(^[1-9][0-9][0-9][0-9]$)|(^[1-9][0-9][0-9][0-9][0-9]$)|(^[1-9][0-9][0-9][0-9][0-9][0-9]$)");
+	QRegExp oRegExpNum("^[0-9]{6,10}$");
 	if (oRegExpNum.exactMatch(_qsNumber))
 	{
 		bIsSucc = true;

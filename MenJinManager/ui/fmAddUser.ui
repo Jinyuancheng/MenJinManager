@@ -54,7 +54,7 @@
              <string>取消</string>
             </property>
            </widget>
-           <widget class="QWidget" name="">
+           <widget class="QWidget" name="layoutWidget">
             <property name="geometry">
              <rect>
               <x>52</x>
@@ -115,19 +115,6 @@
            <property name="title">
             <string/>
            </property>
-           <widget class="QLabel" name="m_lbPic">
-            <property name="geometry">
-             <rect>
-              <x>32</x>
-              <y>10</y>
-              <width>101</width>
-              <height>111</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
            <widget class="QPushButton" name="m_btnPicPath">
             <property name="geometry">
              <rect>
@@ -140,6 +127,28 @@
             <property name="text">
              <string>浏览</string>
             </property>
+           </widget>
+           <widget class="QGroupBox" name="groupBox_4">
+            <property name="geometry">
+             <rect>
+              <x>30</x>
+              <y>20</y>
+              <width>111</width>
+              <height>111</height>
+             </rect>
+            </property>
+            <property name="title">
+             <string/>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_3">
+             <item row="0" column="0">
+              <widget class="QLabel" name="m_lbPic">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </widget>
          </item>

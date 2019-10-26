@@ -35,6 +35,8 @@ private:
 	void InitVarInfo();
 	/*\ 释放成员变量 \*/
 	void DelVarInfo();
+	/*\ 初始化子窗体中的数据 \*/
+	void InitMemberFunc();
 public:
 	/*\ 从服务获取用户存储并显示 \*/
 	void GetUserInfo();

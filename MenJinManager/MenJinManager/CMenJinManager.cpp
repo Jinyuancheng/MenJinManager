@@ -1,8 +1,8 @@
 #include "CMenJinManager.h"
 #include <QString>
 #include <windows.h>
+#include <thread>
 
-//#include ""
 
 #ifndef _UTILS_H_
 #include "../Utils/utils.h"
@@ -43,19 +43,19 @@ void CMenJinManager::InitControlStyle()
 	/*\ 设置窗口标题 \*/
 	this->setWindowTitle(QString::fromLocal8Bit("服务配置"));
 	/*\ 设置edit中的默认值 \*/
-	ui.m_editIp->setText("192.168.3.43");
+	ui.m_editIp->setText("192.168.1.152");
 	ui.m_editSPort->setText("8086");
 	ui.m_editCPort->setText("8084");
 }
 
- /****************************************!
- *@brief  绑定信号和槽函数
- *@author Jinzi
- *@date   2019/10/26 9:05:29
- *@param[in]  
- *@param[out] 
- *@return     
- ****************************************/
+/****************************************!
+*@brief  绑定信号和槽函数
+*@author Jinzi
+*@date   2019/10/26 9:05:29
+*@param[in]
+*@param[out]
+*@return
+****************************************/
 void CMenJinManager::BindSignalAndSlot()
 {
 	/*\ 确认按钮绑定槽函数 \*/
@@ -64,14 +64,14 @@ void CMenJinManager::BindSignalAndSlot()
 	connect(ui.m_btnQuit, &QPushButton::clicked, this, &CMenJinManager::close);
 }
 
- /****************************************!
- *@brief  确认按钮槽函数
- *@author Jinzi
- *@date   2019/10/26 9:09:14
- *@param[in]  
- *@param[out] 
- *@return     
- ****************************************/
+/****************************************!
+*@brief  确认按钮槽函数
+*@author Jinzi
+*@date   2019/10/26 9:09:14
+*@param[in]
+*@param[out]
+*@return
+****************************************/
 void CMenJinManager::BtnOkClickSlotFunc()
 {
 	/*\ 获取用户输入，判断用户输入是否合法 \*/
@@ -97,39 +97,41 @@ void CMenJinManager::BtnOkClickSlotFunc()
 	m_opSvrInfo->m_qsSvrIp = ui.m_editIp->text();
 	m_opSvrInfo->m_qsSSvrPort = ui.m_editSPort->text();
 	m_opSvrInfo->m_qsCSvrPort = ui.m_editCPort->text();
+	/*\ 显示窗口 \*/
+	m_opFmMain->show();
 	/*\ 将输入存储到主窗口中 \*/
 	m_opFmMain->SetSvrInfo(*m_opSvrInfo);
 	/*\ 得到服务器中存储的用户信息，保存并显示 \*/
 	m_opFmMain->GetUserInfo();
 	/*\ 得到服务器中门禁的信息 保存 登录并显示 \*/
+	//std::thread oThread(std::bind(&CFmMain::GetMenJinInfo, m_opFmMain));
+	//oThread.join();
 	m_opFmMain->GetMenJinInfo();
-	/*\ 显示窗口 \*/
-	m_opFmMain->show();
 	this->close();
 }
 
- /****************************************!
- *@brief  初始化变量信息
- *@author Jinzi
- *@date   2019/10/26 10:20:58
- *@param[in]  
- *@param[out] 
- *@return     
- ****************************************/
+/****************************************!
+*@brief  初始化变量信息
+*@author Jinzi
+*@date   2019/10/26 10:20:58
+*@param[in]
+*@param[out]
+*@return
+****************************************/
 void CMenJinManager::InitVarInfo()
 {
 	m_opSvrInfo = new SSvrInfo();
 	m_opFmMain = new CFmMain();
 }
 
- /****************************************!
- *@brief  释放动态申请的内存
- *@author Jinzi
- *@date   2019/10/26 10:22:28
- *@param[in]  
- *@param[out] 
- *@return     
- ****************************************/
+/****************************************!
+*@brief  释放动态申请的内存
+*@author Jinzi
+*@date   2019/10/26 10:22:28
+*@param[in]
+*@param[out]
+*@return
+****************************************/
 void CMenJinManager::DelVarInfo()
 {
 	if (m_opSvrInfo != nullptr)

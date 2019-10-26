@@ -9,11 +9,11 @@
 #include <QVariantList>
 #include <QStandardItemModel>
 #include <QJsonArray>
+#include <thread>
 
 #ifndef _HIKHANDLE_H_
 #include "./CHikHandle.h"
 #endif // !_HIKHANDLE_H_
-
 
 
 CFmMain::CFmMain(QWidget* parent /* = Q_NULLPTR */)
@@ -25,12 +25,27 @@ CFmMain::CFmMain(QWidget* parent /* = Q_NULLPTR */)
 	this->BindSignalAndSlot();
 	/*\ 初始化成员变量 \*/
 	this->InitVarInfo();
+	/*\ 初始化成员窗体中的函数指针 \*/
+	this->InitMemberFunc();
 }
 
 CFmMain::~CFmMain()
 {
 	/*\ 释放成员变量 \*/
 	this->DelVarInfo();
+}
+
+ /****************************************!
+ *@brief  初始化成员窗口的函数指针
+ *@author Jinzi
+ *@date   2019/10/26 17:39:41
+ *@param[in]  
+ *@param[out] 
+ *@return     
+ ****************************************/
+void CFmMain::InitMemberFunc()
+{
+	m_fmAddUser.m_funcGetUserInfo = std::bind(&CFmMain::GetUserInfo, this);
 }
 
 /****************************************!
@@ -43,7 +58,8 @@ CFmMain::~CFmMain()
 ****************************************/
 void CFmMain::InitControlStyle()
 {
-
+	/*\ 设置窗口标题 \*/
+	this->setWindowTitle(QString::fromLocal8Bit("人员管理系统"));
 }
 /****************************************!
 *@brief  绑定信号和槽
@@ -342,15 +358,17 @@ void CFmMain::GetMenJinInfoCallBack(QNetworkReply* _opReqplay)
 	this->ShowAllMenJinToTV();
 }
 
- /****************************************!
- *@brief  添加用户按钮点击事件
- *@author Jinzi
- *@date   2019/10/26 15:28:45
- *@param[in]  
- *@param[out] 
- *@return     
- ****************************************/
+/****************************************!
+*@brief  添加用户按钮点击事件
+*@author Jinzi
+*@date   2019/10/26 15:28:45
+*@param[in]
+*@param[out]
+*@return
+****************************************/
 void CFmMain::BtnAddUserClickedSlot()
 {
+	/*\ 将服务信息存储到fmAddUser中 \*/
+	m_fmAddUser.SetSvrInfo(m_opSvrInfo);
 	m_fmAddUser.show();
 }
