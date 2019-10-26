@@ -19,6 +19,10 @@
 #include "./CFmAddUser.h"
 #endif
 
+#ifndef _CFMCHANAGEUSER_H_
+#include "./CFmChangeUser.h"
+#endif
+
 class CFmMain: 
 	public QMainWindow
 {
@@ -61,6 +65,8 @@ public slots:
 	void BtnAddUserClickedSlot();
 	/*\ 删除用户按钮点击事件 \*/
 	void BtnDelUserClickedSlot();
+	/*\ 修改用户按钮点击事件 \*/
+	void BtnChangeUserClickedSlot();
 private:
 	Ui::CFmMain				ui;					/*\ ui界面操作 \*/
 	SSvrInfo				m_opSvrInfo;		/*\ 存储服务信息 \*/
@@ -68,6 +74,7 @@ private:
 	std::vector<SUserInfo>	m_vecUserAllInfo;	/*\ 存储用户信息 \*/
 	std::vector<SMenJinInfo>m_vecMenJinInfo;	/*\ 门禁信息 \*/
 	CFmAddUser				m_fmAddUser;		/*\ 添加用户页面 \*/
+	CFmChangeUser			m_fmChangeUser;		/*\ 修改用户页面 \*/
 };
 
 #endif

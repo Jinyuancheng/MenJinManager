@@ -19,6 +19,7 @@ typedef struct
 	QString		m_qsUserCardNum;/*\ 用户卡号 \*/
 	QString		m_qsUserJobNum;	/*\ 用户工号 \*/
 	QString		m_qsUserName;	/*\ 用户姓名 \*/
+	QString		m_qsPicPath;	/*\ 图片路径 \*/
 }SUserInfo, *pSUserInfo;
 
 /*\ 存储门禁信息 \*/

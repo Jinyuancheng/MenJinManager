@@ -47,6 +47,7 @@ CFmMain::~CFmMain()
 void CFmMain::InitMemberFunc()
 {
 	m_fmAddUser.m_funcGetUserInfo = std::bind(&CFmMain::GetUserInfo, this);
+	m_fmChangeUser.m_funcGetUserInfo = std::bind(&CFmMain::GetUserInfo, this);
 }
 
 /****************************************!
@@ -76,6 +77,8 @@ void CFmMain::BindSignalAndSlot()
 	connect(ui.m_btnAddUser, &QPushButton::clicked, this, &CFmMain::BtnAddUserClickedSlot);
 	/*\ 删除用户按钮 \*/
 	connect(ui.m_btnDelUser, &QPushButton::clicked, this, &CFmMain::BtnDelUserClickedSlot);
+	/*\ 修改用户信息按钮 \*/
+	connect(ui.m_btnChangeUser, &QPushButton::clicked, this, &CFmMain::BtnChangeUserClickedSlot);
 }
 /****************************************!
 *@brief  初始化成员变量
@@ -189,6 +192,7 @@ void CFmMain::GetUserInfoCallBack(QNetworkReply* _opReqplay)
 			opSvrInfo->m_qsUserName = map.value("userName").toString();
 			opSvrInfo->m_qsUserJobNum = map.value("jobNumber").toString();
 			opSvrInfo->m_qsUserCardNum = map.value("cardNumber").toString();
+			opSvrInfo->m_qsPicPath = map.value("imgName").toString();
 			m_vecUserAllInfo.push_back(*opSvrInfo);
 		}
 	}
@@ -422,6 +426,8 @@ void CFmMain::DelUserInfoCallBack(QNetworkReply* _opReqplay)
 	QJsonObject jsonResData = QJsonDocument::fromJson(replyContent).object();
 	if (jsonResData.value("code").toString() == 0)
 	{
+		/*\ 得到用户信息 \*/
+		this->GetUserInfo();
 		MessageBoxA(nullptr, "删除用户成功", "提示", MB_OK);
 		return;
 	}
@@ -430,4 +436,35 @@ void CFmMain::DelUserInfoCallBack(QNetworkReply* _opReqplay)
 		MessageBoxA(nullptr, "删除用户失败", "提示", MB_OK | MB_ICONERROR);
 		return;
 	}
+}
+
+ /****************************************!
+ *@brief  修改按钮的点击事件
+ *@author Jinzi
+ *@date   2019/10/26 18:22:18
+ *@param[in]  
+ *@param[out] 
+ *@return     
+ ****************************************/
+void CFmMain::BtnChangeUserClickedSlot()
+{
+	/*\ 判断用户选择的是哪个用户 \*/
+	QModelIndexList selected = ui.m_tvUserInfo->selectionModel()->selectedRows();
+	if (selected.size() > 1)
+	{
+		MessageBoxA(nullptr, "请只选择一个用户", "提示", MB_OK | MB_ICONERROR);
+		return;
+	}
+	int iIndex = ui.m_tvUserInfo->currentIndex().row();
+	if (iIndex == -1)
+	{
+		MessageBoxA(nullptr, "请选择一个要修改的用户", "提示", MB_OK | MB_ICONERROR);
+		return;
+	}
+	/*\ 设置选中的用户信息 \*/
+	m_fmChangeUser.SetChangeUserInfo(m_vecUserAllInfo[iIndex]);
+	/*\ 设置服务器Ip等信息 \*/
+	m_fmChangeUser.SetSvrInfo(m_opSvrInfo);
+	/*\ 显示页面 \*/
+	m_fmChangeUser.show();
 }

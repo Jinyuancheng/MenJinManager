@@ -19,14 +19,18 @@ HEADERS += ./MenJinManager/CHikHandle.h \
     ./Utils/template.h \
     ./Utils/utils.h \
     ./MenJinManager/CMenJinManager.h \
-    ./MenJinManager/CFmMain.h
+    ./MenJinManager/CFmMain.h \
+    ./uic/ui_fmAddUser.h \
+    ./MenJinManager/CFmAddUser.h
 SOURCES += ./MenJinManager/CHikHandle.cpp \
     ./MenJinManager/CFmMain.cpp \
     ./MenJinManager/CHttpRequest.cpp \
     ./MenJinManager/CMenJinManager.cpp \
     ./main.cpp \
-    ./Utils/utils.cpp
+    ./Utils/utils.cpp \
+    ./MenJinManager/CFmAddUser.cpp
 FORMS += ./ui/fmMain.ui \
     ./ui/CMenJinManager.ui \
-    ./ui/fmAddUser.ui
+    ./ui/fmAddUser.ui \
+    ./ui/fmChangeUser.ui
 RESOURCES += ui/CMenJinManager.qrc

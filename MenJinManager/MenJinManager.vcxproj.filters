@@ -46,6 +46,9 @@
     <ClCompile Include="MenJinManager\CFmAddUser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MenJinManager\CFmChangeUser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="ui\CMenJinManager.ui">
@@ -55,6 +58,9 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="ui\fmAddUser.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="ui\fmChangeUser.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>
@@ -71,6 +77,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="MenJinManager\CFmAddUser.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="MenJinManager\CFmChangeUser.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -109,6 +118,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="uic\ui_fmAddUser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="uic\ui_fmChangeUser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

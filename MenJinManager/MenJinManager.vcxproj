@@ -102,6 +102,7 @@
     </QtUic>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="MenJinManager\CFmChangeUser.cpp" />
     <ClCompile Include="MenJinManager\CFmAddUser.cpp" />
     <ClCompile Include="MenJinManager\CHikHandle.cpp" />
     <ClCompile Include="MenJinManager\CFmMain.cpp" />
@@ -115,6 +116,7 @@
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="ui\fmAddUser.ui" />
+    <QtUic Include="ui\fmChangeUser.ui" />
     <QtUic Include="ui\fmMain.ui" />
     <QtUic Include="ui\CMenJinManager.ui" />
   </ItemGroup>
@@ -124,6 +126,7 @@
   <ItemGroup>
     <QtMoc Include="MenJinManager\CFmMain.h" />
     <QtMoc Include="MenJinManager\CFmAddUser.h" />
+    <QtMoc Include="MenJinManager\CFmChangeUser.h" />
     <ClInclude Include="MenJinManager\CHikHandle.h" />
     <ClInclude Include="HIKSDK\DataType.h" />
     <ClInclude Include="HIKSDK\DecodeCardSdk.h" />
@@ -133,6 +136,7 @@
     <ClInclude Include="Public\PubDef.h" />
     <ClInclude Include="uic\ui_CMenJinManager.h" />
     <ClInclude Include="uic\ui_fmAddUser.h" />
+    <ClInclude Include="uic\ui_fmChangeUser.h" />
     <ClInclude Include="uic\ui_fmMain.h" />
     <ClInclude Include="Utils\template.h" />
     <ClInclude Include="Utils\utils.h" />
