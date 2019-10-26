@@ -3,6 +3,7 @@
 #define _PUBDEF_H_
 
 #include <QString>
+
 /*\ 用来存储服务信息 \*/
 typedef struct
 {

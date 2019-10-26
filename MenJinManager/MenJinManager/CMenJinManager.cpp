@@ -1,10 +1,10 @@
 #include "CMenJinManager.h"
 #include <QString>
+#include <windows.h>
 
 #ifndef _UTILS_H_
 #include "../Utils/utils.h"
 #endif // !_UTILS_H_
-
 
 CMenJinManager::CMenJinManager(QWidget* parent)
 	: QMainWindow(parent)
@@ -14,6 +14,14 @@ CMenJinManager::CMenJinManager(QWidget* parent)
 	this->InitControlStyle();
 	/*\ 绑定信号和槽 \*/
 	this->BindSignalAndSlot();
+	/*\ 初始化成员变量信息信息 \*/
+	this->InitVarInfo();
+}
+
+CMenJinManager::~CMenJinManager()
+{
+	/*\ 释放成员变量动态申请的内存 \*/
+	this->DelVarInfo();
 }
 
 /****************************************!
@@ -64,6 +72,57 @@ void CMenJinManager::BindSignalAndSlot()
  ****************************************/
 void CMenJinManager::BtnOkClickSlotFunc()
 {
-	/*\ 获取用户输入 \*/
+	/*\ 获取用户输入，判断用户输入是否合法 \*/
+	if (!CUtils::GetInstance()->JuageIpLegal(ui.m_editIp->text()))
+	{
+		MessageBoxA(nullptr, "您输入的ip不合法,请重新输入", "提示", MB_OK | MB_ICONERROR);
+		ui.m_editIp->setText("");
+		return;
+	}
+	if (!CUtils::GetInstance()->JuagePortLegal(ui.m_editSPort->text()))
+	{
+		MessageBoxA(nullptr, "您输入的服务端口不合法,请重新输入", "提示", MB_OK | MB_ICONERROR);
+		ui.m_editSPort->setText("");
+		return;
+	}
+	if (!CUtils::GetInstance()->JuagePortLegal(ui.m_editSPort->text()))
+	{
+		MessageBoxA(nullptr, "您输入的前端端口不合法,请重新输入", "提示", MB_OK | MB_ICONERROR);
+		ui.m_editCPort->setText("");
+		return;
+	}
+	/*\ 保存数据 \*/
+	m_opSvrInfo->m_qsSvrIp = ui.m_editIp->text();
+	m_opSvrInfo->m_qsSSvrPort = ui.m_editSPort->text();
+	m_opSvrInfo->m_qsCSvrPort = ui.m_editCPort->text();
+	this->close();
+}
 
+ /****************************************!
+ *@brief  初始化变量信息
+ *@author Jinzi
+ *@date   2019/10/26 10:20:58
+ *@param[in]  
+ *@param[out] 
+ *@return     
+ ****************************************/
+void CMenJinManager::InitVarInfo()
+{
+	m_opSvrInfo = new SSvrInfo();
+}
+
+ /****************************************!
+ *@brief  释放动态申请的内存
+ *@author Jinzi
+ *@date   2019/10/26 10:22:28
+ *@param[in]  
+ *@param[out] 
+ *@return     
+ ****************************************/
+void CMenJinManager::DelVarInfo()
+{
+	if (m_opSvrInfo != nullptr)
+	{
+		delete m_opSvrInfo;
+	}
 }
