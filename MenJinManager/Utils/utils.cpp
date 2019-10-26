@@ -5,12 +5,8 @@
 #include <QDir>
 #include <QRegExp>
 
-#include "../Public/PublicDefine.h"
-
-
 typedef bool(*FuncReadPictureInfo)(const char*, std::string&);
-/*\ ´æ´¢Â·¾¶ \*/
-extern CSaveiniInfo* gl_opSaveIniInfo;
+
 
 /****************************************!
 *@brief  È¥³ýµô×Ö·û´®ÖÐµÄÖ¸¶¨×Ö·û

@@ -18,5 +18,5 @@ public slots:
 	/*\ 确认按钮点击事件 \*/
 	void BtnOkClickSlotFunc();
 private:
-	Ui::CMenJinManagerClass* ui;
+	Ui::CMenJinManagerClass ui;
 };
