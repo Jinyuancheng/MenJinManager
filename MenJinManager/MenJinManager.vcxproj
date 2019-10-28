@@ -69,7 +69,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <AdditionalIncludeDirectories>E:\QT_5.12.3\5.12.3\msvc2017\include\QtNetwork;E:\QT_5.12.3\5.12.3\msvc2017\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\QT_5.12.3\5.12.3\msvc2017\include\QtCore;E:\QT_5.12.3\5.12.3\msvc2017\include\QtNetwork;E:\QT_5.12.3\5.12.3\msvc2017\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -88,7 +88,7 @@
       <DebugInformationFormat />
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <AdditionalIncludeDirectories>E:\QT_5.12.3\5.12.3\msvc2017\include\QtNetwork;E:\QT_5.12.3\5.12.3\msvc2017\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\QT_5.12.3\5.12.3\msvc2017\include\QtCore;E:\QT_5.12.3\5.12.3\msvc2017\include\QtNetwork;E:\QT_5.12.3\5.12.3\msvc2017\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

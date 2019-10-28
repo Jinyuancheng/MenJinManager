@@ -266,7 +266,7 @@ void CFmChangeUser::SvrRetChangeUserInfoHandle(QNetworkReply* _opReplay)
 	// 保存接受的数据;（图片名称imgName）
 	QByteArray replyContent = _opReplay->readAll();
 	QJsonObject jsonResData = QJsonDocument::fromJson(replyContent).object();
-	if (jsonResData.value("code").toString() == 0)
+	if (jsonResData.value("code").toInt() == 0)
 	{
 		/*\ 更新显示用户信息 \*/
 		if (m_funcGetUserInfo != nullptr)

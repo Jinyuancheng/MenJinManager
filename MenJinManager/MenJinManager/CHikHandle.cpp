@@ -1,5 +1,8 @@
 #include "CHikHandle.h"
-
+#include <QString>
+#include <QFile>
+#include <QCoreApplication>
+#include <iostream>
 
 /****************************************!
 *@brief  海康回调函数
@@ -35,15 +38,15 @@ CHikHandle::~CHikHandle()
 	this->DelHikSDK();
 }
 
- /****************************************!
- *@brief  门禁登录
- *@author Jinzi
- *@date   2019/10/26 14:31:49
- *@param[in]  
-	_vecMenJinInfo	:	门禁登录信息
- *@param[out] 
- *@return     
- ****************************************/
+/****************************************!
+*@brief  门禁登录
+*@author Jinzi
+*@date   2019/10/26 14:31:49
+*@param[in]
+   _vecMenJinInfo	:	门禁登录信息
+*@param[out]
+*@return
+****************************************/
 void CHikHandle::MenJinLogin(std::vector<SMenJinInfo>& _vecMenJinInfo)
 {
 	bool bOk;
@@ -64,6 +67,7 @@ void CHikHandle::MenJinLogin(std::vector<SMenJinInfo>& _vecMenJinInfo)
 			oLoginInfo.byLoginMode = 0;
 			/*\ 进行登录 \*/
 			_vecMenJinInfo[i].m_iLoginHandle = NET_DVR_Login_V40(&oLoginInfo, &oDevInfo);
+			int iError = NET_DVR_GetLastError();
 			if (_vecMenJinInfo[i].m_iLoginHandle >= 0)
 			{
 				_vecMenJinInfo[i].m_bIsLogin = true;
@@ -72,14 +76,14 @@ void CHikHandle::MenJinLogin(std::vector<SMenJinInfo>& _vecMenJinInfo)
 	}
 }
 
- /****************************************!
- *@brief  初始化海康sdk
- *@author Jinzi
- *@date   2019/10/26 14:35:45
- *@param[in]  
- *@param[out] 
- *@return     
- ****************************************/
+/****************************************!
+*@brief  初始化海康sdk
+*@author Jinzi
+*@date   2019/10/26 14:35:45
+*@param[in]
+*@param[out]
+*@return
+****************************************/
 void CHikHandle::InitHikSDK()
 {
 	if (NET_DVR_Init())
@@ -88,28 +92,288 @@ void CHikHandle::InitHikSDK()
 	}
 }
 
- /****************************************!
- *@brief  释放海康sdk
- *@author Jinzi
- *@date   2019/10/26 14:41:42
- *@param[in]  
- *@param[out] 
- *@return     
- ****************************************/
+/****************************************!
+*@brief  释放海康sdk
+*@author Jinzi
+*@date   2019/10/26 14:41:42
+*@param[in]
+*@param[out]
+*@return
+****************************************/
 void CHikHandle::DelHikSDK()
 {
 	NET_DVR_Cleanup();
 }
 
+/****************************************!
+*@brief  初始化成员变量信息
+*@author Jinzi
+*@date   2019/10/26 14:39:46
+*@param[in]
+*@param[out]
+*@return
+****************************************/
+void CHikHandle::InitVarInfo()
+{
+	m_funcHikCallBack = (MSGCallBack_V31)MsgHikCallBack;
+	m_iLongConnHandle = -1;
+}
+
+/****************************************!
+*@brief  门禁人员下发
+*@author Jinzi
+*@date   2019/10/28 8:29:53
+*@param[in]
+	_vecMenJinInfo	:	门禁主机的存储信息
+	_vecUserInfo	:	用户信息
+*@param[out]
+*@return
+****************************************/
+std::vector<SMenJinSendDownInfo> CHikHandle::MenJinUserSendDown(std::vector<SMenJinInfo>& _vecMenJinInfo, std::vector<SUserInfo>& _vecUserInfo)
+{
+	bool bOk;
+	NET_DVR_CARD_CFG_COND oAddCardInfo = { 0 };
+	std::vector<SMenJinSendDownInfo> vecMenJinSendDownInfo;
+	for (int i = 0; i < _vecMenJinInfo.size(); i++)
+	{
+		SMenJinSendDownInfo oMenJinSendDownInfo = { 0 };
+		oMenJinSendDownInfo.m_qsMenJinIp = _vecMenJinInfo[i].m_qsMenJinIp;
+		oMenJinSendDownInfo.m_bIsSendDown = false;
+		/*\ 判断只有登录成功的门禁才下发 \*/
+		if (_vecMenJinInfo[i].m_bIsLogin)
+		{
+			for (int j = 0; j < _vecUserInfo.size(); j++)
+			{
+				/*\ 将用户id添加进去 \*/
+				SUserSendDownInfo oUserSendDownInfo = { 0 };
+				oUserSendDownInfo.m_qsUserId = _vecUserInfo[j].m_qsUserId;
+				oUserSendDownInfo.m_bIsUserSucc = false;
+				oUserSendDownInfo.m_bIsPicSucc = false;
+				/*\ 与门禁设备进行通信 \*/
+				oAddCardInfo.dwSize = sizeof(oAddCardInfo);
+				oAddCardInfo.dwCardNum = 1;
+				oAddCardInfo.byCheckCardNo = 1;
+				oAddCardInfo.wLocalControllerID = 0; /*\ 0表示门禁主机 \*/
+				m_iLongConnHandle = NET_DVR_StartRemoteConfig(
+					_vecMenJinInfo[i].m_iLoginHandle,
+					NET_DVR_SET_CARD_CFG_V50,
+					&oAddCardInfo,
+					static_cast<DWORD>(sizeof(oAddCardInfo)),
+					nullptr,
+					nullptr
+				);
+				if (m_iLongConnHandle == -1)
+				{
+					int iError = NET_DVR_GetLastError();
+					MessageBoxA(nullptr, "错误码 : " + iError, "提示", MB_OK | MB_ICONERROR);
+					continue;
+				}
+				/*\ 下发卡信息 \*/
+				NET_DVR_CARD_CFG_V50* opSendCardInfo = new NET_DVR_CARD_CFG_V50();
+				if (opSendCardInfo == nullptr)
+				{
+					continue;
+				}
+				opSendCardInfo->dwSize = sizeof(NET_DVR_CARD_CFG_V50);
+				opSendCardInfo->dwModifyParamType = 0x00040d8d; //0x000c80;//工号 姓名 密码
+				/*\ 门权限模板 开启魔板 \*/
+				opSendCardInfo->dwPlanTemplate = 1;//1.全天开启
+				/*\ 门权限 \*/
+				opSendCardInfo->byDoorRight[0] = 1;
+				/*\ 卡模板参数 \*/
+				opSendCardInfo->wCardRightPlan[0][0] = 1;
+				opSendCardInfo->wCardRightPlan[0][1] = 2;
+				/*\ 卡号 \*/
+				strcpy((char*)(opSendCardInfo->byCardNo), _vecUserInfo[j].m_qsUserCardNum.toLocal8Bit().data());
+				/*\ 卡密码 \*/
+				strcpy((char*)opSendCardInfo->byCardPassword, "111111");
+				/*\ 工号,不能以0开头，且不能重复 \*/
+				opSendCardInfo->dwEmployeeNo = _vecUserInfo[j].m_qsUserJobNum.toUInt(&bOk, 10);
+				/*\ 用户名 \*/
+				strcpy((char*)opSendCardInfo->byName, _vecUserInfo[j].m_qsUserName.toLocal8Bit().data());
+				/*\ 卡类型 \*/
+				opSendCardInfo->byCardType = 1;
+				/*\ 卡是否有效 \*/
+				opSendCardInfo->byCardValid = 1;
+				/*\ 用户类型 \*/
+				opSendCardInfo->byUserType = 0;
+				/*\ 发送数据 \*/
+				if (!NET_DVR_SendRemoteConfig(
+					m_iLongConnHandle,
+					ENUM_ACS_SEND_DATA,
+					(char*)opSendCardInfo,
+					sizeof(NET_DVR_CARD_CFG_V50)))
+				{
+					if (opSendCardInfo != nullptr)
+					{
+						delete opSendCardInfo;
+						opSendCardInfo = nullptr;
+					}
+					int iError = NET_DVR_GetLastError();
+					if (opSendCardInfo != nullptr)
+					{
+						delete opSendCardInfo;
+						opSendCardInfo = nullptr;
+					}
+					continue;
+				}
+				else
+				{
+					NET_DVR_StopRemoteConfig(m_iLongConnHandle);
+					if (opSendCardInfo != nullptr)
+					{
+						delete opSendCardInfo;
+						opSendCardInfo = nullptr;
+					}
+					oUserSendDownInfo.m_bIsUserSucc = true;
+					/*\ 下发人脸信息,返回true表示人脸下发成功 \*/
+					if (this->MenJinUserSendDownFace(_vecUserInfo[j].m_qsUserCardNum,
+						_vecMenJinInfo[i].m_iLoginHandle, _vecUserInfo[j].m_qsPicPath))
+					{
+						oUserSendDownInfo.m_bIsPicSucc = true;
+					}
+				}
+				oMenJinSendDownInfo.m_vecUserSendDownInfo.push_back(oUserSendDownInfo);
+			}
+			vecMenJinSendDownInfo.push_back(oMenJinSendDownInfo);
+		}
+		else
+		{
+			vecMenJinSendDownInfo.push_back(oMenJinSendDownInfo);
+		}
+	}
+	return vecMenJinSendDownInfo;
+}
+
+/****************************************!
+*@brief  门禁用户下发人脸信息
+*@author Jinzi
+*@date   2019/10/28 8:53:10
+*@param[in]
+	_qsCardNum		:	卡号
+	_iLoginHandle	:	海康登录句柄
+	_iPicPath		:	人脸图片路径
+*@param[out]
+*@return
+****************************************/
+bool CHikHandle::MenJinUserSendDownFace(QString& _qsCardNum, int _iLoginHandle, QString& _iPicPath)
+{
+	bool bIsSucc = false;
+	NET_DVR_FACE_PARAM_COND oStartFaceInfo = { 0 };
+	oStartFaceInfo.dwSize = sizeof(NET_DVR_FACE_PARAM_COND);
+	oStartFaceInfo.dwFaceNum = 1;
+	oStartFaceInfo.byFaceID = 1;
+	oStartFaceInfo.byEnableCardReader[0] = 1;
+	strcpy((char*)oStartFaceInfo.byCardNo, _qsCardNum.toLocal8Bit().data());
+	/*\ 建立长连接 \*/
+	m_iLongConnHandle = NET_DVR_StartRemoteConfig(
+		_iLoginHandle,
+		NET_DVR_SET_FACE_PARAM_CFG,
+		&oStartFaceInfo,
+		static_cast<DWORD>(sizeof(NET_DVR_FACE_PARAM_COND)),
+		nullptr,
+		nullptr
+	);
+	if (m_iLongConnHandle == -1)
+	{
+		int iError = NET_DVR_GetLastError();
+		return bIsSucc;
+	}
+	/*\ 发送数据 \*/
+	NET_DVR_FACE_PARAM_CFG oSendFaceInfo = { 0 };
+	oSendFaceInfo.dwSize = sizeof(NET_DVR_FACE_PARAM_CFG);
+	oSendFaceInfo.byFaceDataType = 1;
+	oSendFaceInfo.byFaceID = 1;
+	oSendFaceInfo.byEnableCardReader[0] = 1;
+	/*\ 卡号 \*/
+	strcpy((char*)oSendFaceInfo.byCardNo, _qsCardNum.toLocal8Bit().data());
+	/*\ 图片的url地址 \*/
+	QString qsPicUrl = "http://" + m_oSvrInfo.m_qsSvrIp + ":" +
+		m_oSvrInfo.m_qsCSvrPort + "/headinfo/" + _iPicPath.toLocal8Bit().data();
+	QByteArray oPicData = this->GetHttpPicData(qsPicUrl);
+	/*\ 将图片数据存储到文件中 \*/
+	QString qsFileName = QCoreApplication::applicationDirPath() + "/imageformats/face.jpg";
+	FILE* opFileW = fopen(qsFileName.toLocal8Bit().data(), "wb");
+	if (!opFileW)
+	{
+		return false;
+	}
+	fwrite(oPicData.data(), 1, oPicData.length(), opFileW);
+	fclose(opFileW);
+	/*\ 读取文件信息 \*/
+	char* chpBuf = new char[200 * 1024];
+	FILE* fileI = fopen(std::string(qsFileName.toLocal8Bit().data()).c_str(), "rb");
+	//FILE* fileI = fopen(std::string(qsFileName.toLocal8Bit().data()).c_str(), "rb");
+	if (!fileI)
+	{
+		return false;
+	}
+	/*\ 给char*分配内存 \*/
+	int iLength = fread(chpBuf, 1, 200 * 1024, fileI);
+	fclose(fileI);
+	/*\ 赋值 \*/
+	oSendFaceInfo.pFaceBuffer = chpBuf;
+	oSendFaceInfo.dwFaceLen = iLength;
+	/*\ 发送数据 \*/
+	if (!NET_DVR_SendRemoteConfig(
+		m_iLongConnHandle,
+		ENUM_ACS_INTELLIGENT_IDENTITY_DATA,
+		(char*)& oSendFaceInfo,
+		static_cast<DWORD>(sizeof(NET_DVR_FACE_PARAM_CFG))))
+	{
+		int iError = -1;
+		iError = NET_DVR_GetLastError();
+		NET_DVR_StopRemoteConfig(m_iLongConnHandle);
+		delete chpBuf;
+	}
+	else
+	{
+		NET_DVR_StopRemoteConfig(m_iLongConnHandle);
+		bIsSucc = true;
+		delete chpBuf;
+	}
+	return bIsSucc;
+}
+
+/****************************************!
+*@brief  根据http返回图片数据
+*@author Jinzi
+*@date   2019/10/28 9:03:28
+*@param[in]
+	_qsUrl	:	图片的url
+*@param[out]
+*@return
+****************************************/
+QByteArray CHikHandle::GetHttpPicData(QString _qsUrl)
+{
+	/*\ 返回图片数据 \*/
+	QByteArray oSvrPicData = m_oHttpInstance.HttpGetPicDataWithUrl(_qsUrl.toLocal8Bit().data());
+	return oSvrPicData;
+}
+
+/****************************************!
+*@brief  设置服务器信息
+*@author Jinzi
+*@date   2019/10/28 9:08:03
+*@param[in]
+	_oSvrInfo	:	服务器配置信息
+*@param[out]
+*@return
+****************************************/
+void CHikHandle::SetSvrInfo(SSvrInfo _oSvrInfo)
+{
+	m_oSvrInfo = _oSvrInfo;
+}
+
  /****************************************!
- *@brief  初始化成员变量信息
+ *@brief  修改门禁用户信息
  *@author Jinzi
- *@date   2019/10/26 14:39:46
+ *@date   2019/10/28 15:48:21
  *@param[in]  
  *@param[out] 
  *@return     
  ****************************************/
-void CHikHandle::InitVarInfo()
+bool CHikHandle::MenJinChangeUserInfo(QString& _qsCardNum, int _iLoginHandle)
 {
-	m_funcHikCallBack = (MSGCallBack_V31)MsgHikCallBack;
+	return true;
 }

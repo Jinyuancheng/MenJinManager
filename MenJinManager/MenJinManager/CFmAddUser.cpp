@@ -97,13 +97,13 @@ void CFmAddUser::BtnOkClickSlot()
 	/*\ 判断输入是否合法 \*/
 	if (!CUtils::GetInstance()->JuageNumberLegal(ui.m_editCardNum->text()))
 	{
-		MessageBoxA(nullptr, "卡号不合法,请输入6位到10位的数字", "提示", MB_OK | MB_ICONERROR);
+		MessageBoxA(nullptr, "卡号不合法,请输入6位到10位的数字,第一位不为0", "提示", MB_OK | MB_ICONERROR);
 		ui.m_editCardNum->setText("");
 		return;
 	}
 	if (!CUtils::GetInstance()->JuageNumberLegal(ui.m_editJobNum->text()))
 	{
-		MessageBoxA(nullptr, "工号不合法,请输入6位到10位的数字", "提示", MB_OK | MB_ICONERROR);
+		MessageBoxA(nullptr, "工号不合法,请输入6位到10位的数字,第一位不为0", "提示", MB_OK | MB_ICONERROR);
 		ui.m_editJobNum->setText("");
 		return;
 	}
@@ -111,6 +111,8 @@ void CFmAddUser::BtnOkClickSlot()
 	QString qsUserName = ui.m_editName->text();
 	QString qsUserCardNum = ui.m_editCardNum->text();
 	QString qsUserJobNum = ui.m_editJobNum->text();
+	 
+
 	/*\ 请求服务器 添加用户 \*/
 	QString qsUrl = "http://" + m_opSvrInfo.m_qsSvrIp + ":" + m_opSvrInfo.m_qsSSvrPort + "/patroluser/addPatrolUser";
 	QByteArray oPicBase64 = CUtils::GetInstance()->LocalImageToBase64(m_qsPicPath);
@@ -143,7 +145,7 @@ void CFmAddUser::BtnPicPathClicSlot()
 	//设置默认文件路径
 	fileDialog->setDirectory(".");
 	//设置文件过滤器
-	fileDialog->setNameFilter(tr("Images(*.png *.jpg *.jpeg *.bmp)"));
+	fileDialog->setNameFilter(tr("Images(*.jpg)"));
 	//设置可以选择多个文件,默认为只能选择一个文件QFileDialog::ExistingFiles
 	fileDialog->setFileMode(QFileDialog::ExistingFiles);
 	//设置视图模式
@@ -219,30 +221,31 @@ void CFmAddUser::InitVarInfo()
 	m_qsPicPath = "";
 }
 
- /****************************************!
- *@brief  设置服务器的ip信息等
- *@author Jinzi
- *@date   2019/10/26 17:15:26
- *@param[in]  
-	_SvrInfo	:	存储服务器的ip 端口等信息
- *@param[out] 
- *@return     
- ****************************************/
+/****************************************!
+*@brief  设置服务器的ip信息等
+*@author Jinzi
+*@date   2019/10/26 17:15:26
+*@param[in]
+   _SvrInfo	:	存储服务器的ip 端口等信息
+*@param[out]
+*@return
+****************************************/
 void CFmAddUser::SetSvrInfo(SSvrInfo _SvrInfo)
 {
 	m_opSvrInfo = _SvrInfo;
 }
 
- /****************************************!
- *@brief  处理添加用户信息返回数据
- *@author Jinzi
- *@date   2019/10/26 17:18:55
- *@param[in]  
- *@param[out] 
- *@return     
- ****************************************/
+/****************************************!
+*@brief  处理添加用户信息返回数据
+*@author Jinzi
+*@date   2019/10/26 17:18:55
+*@param[in]
+*@param[out]
+*@return
+****************************************/
 void CFmAddUser::SvrRetAddUserInfoHandle(QNetworkReply* _opReplay)
 {
+	bool bOk;
 	if (_opReplay == nullptr)
 	{
 		MessageBoxA(nullptr, "服务器响应数据为空", "提示", MB_OK | MB_ICONWARNING);
@@ -251,7 +254,8 @@ void CFmAddUser::SvrRetAddUserInfoHandle(QNetworkReply* _opReplay)
 	// 保存接受的数据;（图片名称imgName）
 	QByteArray replyContent = _opReplay->readAll();
 	QJsonObject jsonResData = QJsonDocument::fromJson(replyContent).object();
-	if (jsonResData.value("code").toString() == 0)
+
+	if (jsonResData.value("code").toInt() == 0)
 	{
 		/*\ 调用CFmMain中的GetUserInfo函数 显示最新的用户数据 \*/
 		if (m_funcGetUserInfo != nullptr)
@@ -260,6 +264,11 @@ void CFmAddUser::SvrRetAddUserInfoHandle(QNetworkReply* _opReplay)
 		}
 		MessageBoxA(nullptr, "添加用户成功", "提示", MB_OK | MB_ICONWARNING);
 		this->ClearEditData();
+		return;
+	}
+	else if (jsonResData.value("code").toInt() == 3)
+	{
+		MessageBoxA(nullptr, "该用户卡号或者工号已存在", "提示", MB_OK | MB_ICONERROR);
 		return;
 	}
 	else

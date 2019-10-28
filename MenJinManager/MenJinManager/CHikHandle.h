@@ -3,6 +3,8 @@
 #define _HIKHANDLE_H_
 
 #include <vector>
+#include <QByteArray>
+#include <QString>
 
 #ifndef _TEMPLATE_H_
 #include "../Utils/template.h"
@@ -14,6 +16,10 @@
 
 #ifndef _HC_NET_SDK_H_
 #include "../HIKSDK/HCNetSDK.h"
+#endif
+
+#ifndef _CHTTPREQUEST_H_
+#include "./CHttpRequest.h"
 #endif
 
 /*\ 海康回调函数 \*/
@@ -32,11 +38,26 @@ private:
 	void InitVarInfo();
 	/*\ 释放海康api \*/
 	void DelHikSDK();
+private:
+	/*\ 通过http获取图片数据 \*/
+	QByteArray GetHttpPicData(QString _qsUrl);
+public:
+	/*\ 设置服务信息 \*/
+	void SetSvrInfo(SSvrInfo _oSvrInfo);
 public:
 	/*\ 门禁主机登录 \*/
 	void MenJinLogin(std::vector<SMenJinInfo>& _vecMenJinInfo);
+	/*\ 门禁人员下发 \*/
+	std::vector<SMenJinSendDownInfo> MenJinUserSendDown(std::vector<SMenJinInfo>& _vecMenJinInfo, std::vector<SUserInfo>& _vecUserInfo);
+	/*\ 下发人脸 \*/
+	bool MenJinUserSendDownFace(QString& _qsCardNum, int _iLoginHandle, QString& _iPicPath);
+	/*\ 根据卡号修改人员信息 \*/
+	bool MenJinChangeUserInfo(QString& _qsCardNum, int _iLoginHandle);
 public:
 	MSGCallBack_V31				m_funcHikCallBack;	/*\ 海康回调函数 \*/
+	int							m_iLongConnHandle;	/*\ 长连接句柄 \*/
+	CHttpRequest				m_oHttpInstance;	/*\ 操作http请求 \*/
+	SSvrInfo					m_oSvrInfo;			/*\ 存储服务信息 \*/
 };
 #endif
 

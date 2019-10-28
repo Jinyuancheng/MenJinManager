@@ -118,7 +118,7 @@ QByteArray CUtils::LocalImageToBase64(QString _qsPicPath)
 	QImage image(_qsPicPath);
 	QByteArray oByteArray;
 	QBuffer oBuf(&oByteArray);
-	image.save(&oBuf, "PNG", 20);
+	image.save(&oBuf, "jpg", 20);
 	QByteArray oPicBase64 = oByteArray.toBase64();
 	oBuf.close();
 	return oPicBase64;
@@ -178,7 +178,7 @@ bool CUtils::JuagePortLegal(QString& _qsPort)
 bool CUtils::JuageNumberLegal(QString& _qsNumber)
 {
 	bool bIsSucc = false;
-	QRegExp oRegExpNum("^[0-9]{6,10}$");
+	QRegExp oRegExpNum("^[1-9][0-9]{5,9}$");
 	if (oRegExpNum.exactMatch(_qsNumber))
 	{
 		bIsSucc = true;

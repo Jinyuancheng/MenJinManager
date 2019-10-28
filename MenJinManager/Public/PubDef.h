@@ -3,6 +3,7 @@
 #define _PUBDEF_H_
 
 #include <QString>
+#include <vector>
 
 /*\ 用来存储服务信息 \*/
 typedef struct
@@ -33,4 +34,21 @@ typedef struct
 	int			m_iLoginHandle; /*\ 登录句柄 \*/
 	bool		m_bIsLogin;		/*\ 是否登录 true登录 false未登录\*/
 }SMenJinInfo, *pSMenJinInfo;
+
+/*\ 存储用户是否下发成功 \*/
+typedef struct
+{
+	QString		m_qsUserId;		/*\ 用户ID \*/
+	bool		m_bIsUserSucc;	/*\ 是否人员下发成功 \*/
+	bool		m_bIsPicSucc;	/*\ 图片是否下发成功 \*/
+}SUserSendDownInfo, *pSUserSendDownInfo;
+
+/*\ 用来存储门禁人员信息 \*/
+typedef struct
+{
+	QString							m_qsMenJinIp;			/*\ 门禁Ip \*/
+	bool							m_bIsSendDown;			/*\ 是否下发人员成功 \*/
+	std::vector<SUserSendDownInfo>	m_vecUserSendDownInfo;	/*\ 用户下发信息 \*/
+}SMenJinSendDownInfo, *pSMenJinSendDownInfo;
+
 #endif

@@ -12,6 +12,7 @@
 #include <thread>
 #include <QModelIndexList>
 #include <QList>
+#include <QAbstractItemView>
 
 #ifndef _HIKHANDLE_H_
 #include "./CHikHandle.h"
@@ -36,14 +37,14 @@ CFmMain::~CFmMain()
 	this->DelVarInfo();
 }
 
- /****************************************!
- *@brief  初始化成员窗口的函数指针
- *@author Jinzi
- *@date   2019/10/26 17:39:41
- *@param[in]  
- *@param[out] 
- *@return     
- ****************************************/
+/****************************************!
+*@brief  初始化成员窗口的函数指针
+*@author Jinzi
+*@date   2019/10/26 17:39:41
+*@param[in]
+*@param[out]
+*@return
+****************************************/
 void CFmMain::InitMemberFunc()
 {
 	m_fmAddUser.m_funcGetUserInfo = std::bind(&CFmMain::GetUserInfo, this);
@@ -79,6 +80,8 @@ void CFmMain::BindSignalAndSlot()
 	connect(ui.m_btnDelUser, &QPushButton::clicked, this, &CFmMain::BtnDelUserClickedSlot);
 	/*\ 修改用户信息按钮 \*/
 	connect(ui.m_btnChangeUser, &QPushButton::clicked, this, &CFmMain::BtnChangeUserClickedSlot);
+	/*\ 同步按钮点击事件 \*/
+	connect(ui.m_btnSync, &QPushButton::clicked, this, &CFmMain::BtnSyncClickedSlot);
 }
 /****************************************!
 *@brief  初始化成员变量
@@ -173,7 +176,7 @@ void CFmMain::GetUserInfoCallBack(QNetworkReply* _opReqplay)
 	// 保存接受的数据;（图片名称imgName）
 	QByteArray replyContent = _opReqplay->readAll();
 	QJsonObject jsonResData = QJsonDocument::fromJson(replyContent).object();
-	if (jsonResData.value("code").toString() == 0)
+	if (jsonResData.value("code").toInt() == 0)
 	{
 		QJsonObject::iterator it = jsonResData.find("data");
 		QJsonValueRef arrData = it.value();
@@ -234,6 +237,8 @@ void CFmMain::ShowAllUserToTV()
 	ui.m_tvUserInfo->horizontalHeader()->sectionResizeMode(QHeaderView::Stretch);
 	//表行随着表格变化而自适应变化
 	ui.m_tvUserInfo->verticalHeader()->sectionResizeMode(QHeaderView::Stretch);
+	/*\ 设置只读 \*/
+	ui.m_tvUserInfo->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
 	for (int i = 0; i < m_vecUserAllInfo.size(); i++)
 	{
@@ -288,6 +293,8 @@ void CFmMain::ShowAllMenJinToTV()
 	ui.m_tvMenJinInfo->horizontalHeader()->sectionResizeMode(QHeaderView::Stretch);
 	//表行随着表格变化而自适应变化
 	ui.m_tvMenJinInfo->verticalHeader()->sectionResizeMode(QHeaderView::Stretch);
+	/*\ 设置只读 \*/
+	ui.m_tvMenJinInfo->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	for (int i = 0; i < m_vecMenJinInfo.size(); i++)
 	{
 		/*\ 站点名称 \*/
@@ -334,7 +341,7 @@ void CFmMain::GetMenJinInfoCallBack(QNetworkReply* _opReqplay)
 	// 保存接受的数据;（图片名称imgName）
 	QByteArray replyContent = _opReqplay->readAll();
 	QJsonObject jsonResData = QJsonDocument::fromJson(replyContent).object();
-	if (jsonResData.value("code").toString() == 0)
+	if (jsonResData.value("code").toInt() == 0)
 	{
 		QJsonObject::iterator it = jsonResData.find("data");
 		QJsonValueRef arrData = it.value();
@@ -380,14 +387,14 @@ void CFmMain::BtnAddUserClickedSlot()
 	m_fmAddUser.show();
 }
 
- /****************************************!
- *@brief  删除按钮的点击事件
- *@author Jinzi
- *@date   2019/10/26 17:51:16
- *@param[in]  
- *@param[out] 
- *@return     
- ****************************************/
+/****************************************!
+*@brief  删除按钮的点击事件
+*@author Jinzi
+*@date   2019/10/26 17:51:16
+*@param[in]
+*@param[out]
+*@return
+****************************************/
 void CFmMain::BtnDelUserClickedSlot()
 {
 	/*\ 判断用户都选择的哪个要删除的用户 \*/
@@ -406,14 +413,14 @@ void CFmMain::BtnDelUserClickedSlot()
 		std::bind(&CFmMain::DelUserInfoCallBack, this, std::placeholders::_1));
 }
 
- /****************************************!
- *@brief  删除用户信息的处理函数（服务器回调数据）
- *@author Jinzi
- *@date   2019/10/26 18:08:22
- *@param[in]  
- *@param[out] 
- *@return     
- ****************************************/
+/****************************************!
+*@brief  删除用户信息的处理函数（服务器回调数据）
+*@author Jinzi
+*@date   2019/10/26 18:08:22
+*@param[in]
+*@param[out]
+*@return
+****************************************/
 void CFmMain::DelUserInfoCallBack(QNetworkReply* _opReqplay)
 {
 	if (_opReqplay == nullptr)
@@ -424,7 +431,7 @@ void CFmMain::DelUserInfoCallBack(QNetworkReply* _opReqplay)
 	// 保存接受的数据;（图片名称imgName）
 	QByteArray replyContent = _opReqplay->readAll();
 	QJsonObject jsonResData = QJsonDocument::fromJson(replyContent).object();
-	if (jsonResData.value("code").toString() == 0)
+	if (jsonResData.value("code").toInt() == 0)
 	{
 		/*\ 得到用户信息 \*/
 		this->GetUserInfo();
@@ -438,14 +445,14 @@ void CFmMain::DelUserInfoCallBack(QNetworkReply* _opReqplay)
 	}
 }
 
- /****************************************!
- *@brief  修改按钮的点击事件
- *@author Jinzi
- *@date   2019/10/26 18:22:18
- *@param[in]  
- *@param[out] 
- *@return     
- ****************************************/
+/****************************************!
+*@brief  修改按钮的点击事件
+*@author Jinzi
+*@date   2019/10/26 18:22:18
+*@param[in]
+*@param[out]
+*@return
+****************************************/
 void CFmMain::BtnChangeUserClickedSlot()
 {
 	/*\ 判断用户选择的是哪个用户 \*/
@@ -469,4 +476,37 @@ void CFmMain::BtnChangeUserClickedSlot()
 	//m_fmChangeUser.ShowAfterChangeData();
 	/*\ 显示页面 \*/
 	m_fmChangeUser.show();
+}
+
+/****************************************!
+*@brief  同步按钮点击事件（人员下发）
+*@author Jinzi
+*@date   2019/10/28 9:17:35
+*@param[in]
+*@param[out]
+*@return
+****************************************/
+void CFmMain::BtnSyncClickedSlot()
+{
+	/*\ 设置服务信息 \*/
+	m_oHikApi.SetSvrInfo(m_opSvrInfo);
+	/*\ 调用人员下发接口 \*/
+	std::vector<SMenJinSendDownInfo> vecMenJinSuccInfo = m_oHikApi.MenJinUserSendDown(m_vecMenJinInfo, m_vecUserAllInfo);
+}
+
+ /****************************************!
+ *@brief  修改tableview中门禁状态信息
+ *@author Jinzi
+ *@date   2019/10/28 16:13:05
+ *@param[in]  
+	_qsStatus	:	要显示的状态
+	_iRow		:	行
+	_iColum		:	列
+ *@param[out] 
+ *@return     
+ ****************************************/
+void CFmMain::ChangeTvMenJinStatus(QString _qsStatus,int _iRow,int _iColumn)
+{
+	/*QAbstractItemModel* oModel = ui.m_tvMenJinInfo->model();
+	oModel->setItem(_iRow, _iColumn, new QStandardItem(QString::fromLocal8Bit(_qsStatus.toLocal8Bit().data())));*/
 }
