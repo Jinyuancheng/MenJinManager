@@ -27,6 +27,8 @@ public:
 	bool JuageNumberLegal(QString& _qsNumber);
 	/*\ 判断路径是否合法(正则表达式) \*/
 	bool JuageFilePathLegal(QString& _qsFilePath);
+	/*\ 删除文件 \*/
+	bool DelFile(QString& _qsFilePath);
 private:
 };
 

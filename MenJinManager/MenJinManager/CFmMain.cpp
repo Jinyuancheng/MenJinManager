@@ -399,6 +399,11 @@ void CFmMain::BtnDelUserClickedSlot()
 {
 	/*\ 判断用户都选择的哪个要删除的用户 \*/
 	QModelIndexList selected = ui.m_tvUserInfo->selectionModel()->selectedRows();
+	if (selected.size() == 0)
+	{
+		MessageBoxA(nullptr, "请选择要删除的用户", "提示", MB_OK | MB_ICONERROR);
+		return;
+	}
 	QJsonArray jsonArray;
 	foreach(const QModelIndex & index, selected)
 	{
@@ -492,6 +497,8 @@ void CFmMain::BtnSyncClickedSlot()
 	m_oHikApi.SetSvrInfo(m_opSvrInfo);
 	/*\ 调用人员下发接口 \*/
 	std::vector<SMenJinSendDownInfo> vecMenJinSuccInfo = m_oHikApi.MenJinUserSendDown(m_vecMenJinInfo, m_vecUserAllInfo);
+	/*\ 显示下发结束 \*/
+	MessageBoxA(nullptr, "人员下发结束", "提示", MB_OK);
 }
 
  /****************************************!
@@ -509,4 +516,5 @@ void CFmMain::ChangeTvMenJinStatus(QString _qsStatus,int _iRow,int _iColumn)
 {
 	/*QAbstractItemModel* oModel = ui.m_tvMenJinInfo->model();
 	oModel->setItem(_iRow, _iColumn, new QStandardItem(QString::fromLocal8Bit(_qsStatus.toLocal8Bit().data())));*/
+
 }

@@ -4,6 +4,7 @@
 #include <QCoreApplication>
 #include <QDir>
 #include <QRegExp>
+#include <QFile>
 
 typedef bool(*FuncReadPictureInfo)(const char*, std::string&);
 
@@ -104,15 +105,15 @@ char* CUtils::ReadJpgInfoWithCSharp(const char* _cchpPicJpgPath)
 	//return "";
 }
 
- /****************************************!
- *@brief  将本地图片图片base64编码
- *@author Jinzi
- *@date   2019/09/26 9:44:44
- *@param[in]  
-	_qsPicPath	:	本地图片的路径
- *@param[out] 
- *@return     
- ****************************************/
+/****************************************!
+*@brief  将本地图片图片base64编码
+*@author Jinzi
+*@date   2019/09/26 9:44:44
+*@param[in]
+   _qsPicPath	:	本地图片的路径
+*@param[out]
+*@return
+****************************************/
 QByteArray CUtils::LocalImageToBase64(QString _qsPicPath)
 {
 	QImage image(_qsPicPath);
@@ -124,15 +125,15 @@ QByteArray CUtils::LocalImageToBase64(QString _qsPicPath)
 	return oPicBase64;
 }
 
- /****************************************!
- *@brief  判断ip是否合法
- *@author Jinzi
- *@date   2019/09/29 11:42:44
- *@param[in]  
-	_qsIp		:	需要校验的ip地址
- *@param[out] 
- *@return  true 合法 false 不合法   
- ****************************************/
+/****************************************!
+*@brief  判断ip是否合法
+*@author Jinzi
+*@date   2019/09/29 11:42:44
+*@param[in]
+   _qsIp		:	需要校验的ip地址
+*@param[out]
+*@return  true 合法 false 不合法
+****************************************/
 bool CUtils::JuageIpLegal(QString& _qsIp)
 {
 	bool bIsSucc = false;
@@ -146,15 +147,15 @@ bool CUtils::JuageIpLegal(QString& _qsIp)
 }
 
 
- /****************************************!
- *@brief  判断端口是否合法
- *@author Jinzi
- *@date   2019/09/29 11:45:01
- *@param[in]  
-	_qsPort		:	需要校验的端口
- *@param[out] 
- *@return     true 合法 false 不合法   
- ****************************************/
+/****************************************!
+*@brief  判断端口是否合法
+*@author Jinzi
+*@date   2019/09/29 11:45:01
+*@param[in]
+   _qsPort		:	需要校验的端口
+*@param[out]
+*@return     true 合法 false 不合法
+****************************************/
 bool CUtils::JuagePortLegal(QString& _qsPort)
 {
 	bool bIsSucc = false;
@@ -166,15 +167,15 @@ bool CUtils::JuagePortLegal(QString& _qsPort)
 	return bIsSucc;
 }
 
- /****************************************!
- *@brief  判断数字是否是从000000到0000000000以内的
- *@author Jinzi
- *@date   2019/09/29 14:03:37
- *@param[in]  
-	_qsNumber	:	要比对的数字
- *@param[out] 
- *@return     true 合法 false 不合法
- ****************************************/
+/****************************************!
+*@brief  判断数字是否是从000000到0000000000以内的
+*@author Jinzi
+*@date   2019/09/29 14:03:37
+*@param[in]
+   _qsNumber	:	要比对的数字
+*@param[out]
+*@return     true 合法 false 不合法
+****************************************/
 bool CUtils::JuageNumberLegal(QString& _qsNumber)
 {
 	bool bIsSucc = false;
@@ -186,15 +187,15 @@ bool CUtils::JuageNumberLegal(QString& _qsNumber)
 	return bIsSucc;
 }
 
- /****************************************!
- *@brief  判断文件路径是否合法
- *@author Jinzi
- *@date   2019/09/29 14:35:46
- *@param[in]  
-	_qsFilePath		:	文件路径
- *@param[out] 
- *@return     true 合法 false 不合法
- ****************************************/
+/****************************************!
+*@brief  判断文件路径是否合法
+*@author Jinzi
+*@date   2019/09/29 14:35:46
+*@param[in]
+   _qsFilePath		:	文件路径
+*@param[out]
+*@return     true 合法 false 不合法
+****************************************/
 bool CUtils::JuageFilePathLegal(QString& _qsFilePath)
 {
 	//"(^[a-zA-Z]:(/[a-zA-Z0-9]+)+).([a-zA-Z0-9]+)$|(^[a-zA-Z]:(\\\\[a-zA-Z0-9]+)+).([a-zA-Z0-9]+)$"
@@ -203,6 +204,30 @@ bool CUtils::JuageFilePathLegal(QString& _qsFilePath)
 	if (oRegExpFilePath.exactMatch(_qsFilePath))
 	{
 		bIsSucc = true;
+	}
+	return bIsSucc;
+}
+
+/****************************************!
+*@brief  删除文件
+*@author Jinzi
+*@date   2019/10/28 17:23:27
+*@param[in]
+*@param[out]
+*@return
+****************************************/
+bool CUtils::DelFile(QString& _qsFilePath)
+{
+	bool bIsSucc = false;
+	/*\ 判断文件是否存在 \*/
+	QFile file(_qsFilePath);
+	if (file.exists())
+	{
+		/*\ 进行删除 \*/
+		if (QFile::remove(_qsFilePath))
+		{
+			bIsSucc = true;
+		}
 	}
 	return bIsSucc;
 }

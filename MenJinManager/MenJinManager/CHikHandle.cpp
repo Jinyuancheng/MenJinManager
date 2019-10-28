@@ -3,6 +3,11 @@
 #include <QFile>
 #include <QCoreApplication>
 #include <iostream>
+#include <QDateTime>
+
+#ifndef _UTILS_H_
+#include "../Utils/utils.h"
+#endif
 
 /****************************************!
 *@brief  海康回调函数
@@ -258,6 +263,8 @@ std::vector<SMenJinSendDownInfo> CHikHandle::MenJinUserSendDown(std::vector<SMen
 ****************************************/
 bool CHikHandle::MenJinUserSendDownFace(QString& _qsCardNum, int _iLoginHandle, QString& _iPicPath)
 {
+	/*\ 为了防止后面的图片上传不了 \*/
+	Sleep(1300);
 	bool bIsSucc = false;
 	NET_DVR_FACE_PARAM_COND oStartFaceInfo = { 0 };
 	oStartFaceInfo.dwSize = sizeof(NET_DVR_FACE_PARAM_COND);
@@ -292,28 +299,29 @@ bool CHikHandle::MenJinUserSendDownFace(QString& _qsCardNum, int _iLoginHandle, 
 		m_oSvrInfo.m_qsCSvrPort + "/headinfo/" + _iPicPath.toLocal8Bit().data();
 	QByteArray oPicData = this->GetHttpPicData(qsPicUrl);
 	/*\ 将图片数据存储到文件中 \*/
-	QString qsFileName = QCoreApplication::applicationDirPath() + "/imageformats/face.jpg";
-	FILE* opFileW = fopen(qsFileName.toLocal8Bit().data(), "wb");
+	//QString qsFileName = QCoreApplication::applicationDirPath() + "/imageformats/" + _qsCardNum + ".jpg";
+	/*FILE* opFileW = fopen(qsFileName.toLocal8Bit().data(), "wb");
 	if (!opFileW)
 	{
 		return false;
 	}
 	fwrite(oPicData.data(), 1, oPicData.length(), opFileW);
-	fclose(opFileW);
+	fclose(opFileW);*/
 	/*\ 读取文件信息 \*/
-	char* chpBuf = new char[200 * 1024];
-	FILE* fileI = fopen(std::string(qsFileName.toLocal8Bit().data()).c_str(), "rb");
+	//char* chpBuf = new char[200 * 1024];
+	//memset(chpBuf, 0, 200 * 1024);
 	//FILE* fileI = fopen(std::string(qsFileName.toLocal8Bit().data()).c_str(), "rb");
-	if (!fileI)
-	{
-		return false;
-	}
-	/*\ 给char*分配内存 \*/
-	int iLength = fread(chpBuf, 1, 200 * 1024, fileI);
-	fclose(fileI);
+	//FILE* fileI = fopen(std::string(qsFileName.toLocal8Bit().data()).c_str(), "rb");
+	//if (!fileI)
+	//{
+	//	return false;
+	//}
+	///*\ 给char*分配内存 \*/
+	//int iLength = fread(chpBuf, 1, 200 * 1024, fileI);
+	//fclose(fileI);
 	/*\ 赋值 \*/
-	oSendFaceInfo.pFaceBuffer = chpBuf;
-	oSendFaceInfo.dwFaceLen = iLength;
+	oSendFaceInfo.pFaceBuffer = oPicData.data();
+	oSendFaceInfo.dwFaceLen = oPicData.length();
 	/*\ 发送数据 \*/
 	if (!NET_DVR_SendRemoteConfig(
 		m_iLongConnHandle,
@@ -324,13 +332,14 @@ bool CHikHandle::MenJinUserSendDownFace(QString& _qsCardNum, int _iLoginHandle, 
 		int iError = -1;
 		iError = NET_DVR_GetLastError();
 		NET_DVR_StopRemoteConfig(m_iLongConnHandle);
-		delete chpBuf;
+		//delete chpBuf;
 	}
 	else
 	{
 		NET_DVR_StopRemoteConfig(m_iLongConnHandle);
+		//CUtils::GetInstance()->DelFile(qsFileName);
 		bIsSucc = true;
-		delete chpBuf;
+		//delete chpBuf;
 	}
 	return bIsSucc;
 }
@@ -365,15 +374,16 @@ void CHikHandle::SetSvrInfo(SSvrInfo _oSvrInfo)
 	m_oSvrInfo = _oSvrInfo;
 }
 
- /****************************************!
- *@brief  修改门禁用户信息
- *@author Jinzi
- *@date   2019/10/28 15:48:21
- *@param[in]  
- *@param[out] 
- *@return     
- ****************************************/
-bool CHikHandle::MenJinChangeUserInfo(QString& _qsCardNum, int _iLoginHandle)
+/****************************************!
+*@brief  修改门禁用户信息
+*@author Jinzi
+*@date   2019/10/28 15:48:21
+*@param[in]
+*@param[out]
+*@return
+****************************************/
+std::vector<SMenJinSendDownInfo> CHikHandle::MenJinChangeUserInfo(std::vector<SMenJinInfo>& _vecMenJinInfo, std::vector<SUserInfo>& _vecUserInfo)
 {
-	return true;
+	std::vector<SMenJinSendDownInfo> vecMenJinSuccInfo = this->MenJinUserSendDown(_vecMenJinInfo, _vecUserInfo);
+	return vecMenJinSuccInfo;
 }
