@@ -550,3 +550,16 @@ void CFmMain::ChangeTvMenJinStatus(QString _qsStatus, int _iRow, int _iColumn)
 	oModel->setItem(_iRow, _iColumn, new QStandardItem(QString::fromLocal8Bit(_qsStatus.toLocal8Bit().data())));*/
 
 }
+
+ /****************************************!
+ *@brief  设置显示状态信息 
+ *@author Jinzi
+ *@date   2019/10/29 15:19:28
+ *@param[in]  
+ *@param[out] 
+ *@return     
+ ****************************************/
+void CFmMain::SetShowStatusInfo()
+{
+
+}

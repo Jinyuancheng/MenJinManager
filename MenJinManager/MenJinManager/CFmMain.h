@@ -75,6 +75,8 @@ public slots:
 	void BtnChangeUserClickedSlot();
 	/*\ 同步按钮点击事件 \*/
 	void BtnSyncClickedSlot();
+	/*\ 设置显示状态信息 \*/
+	void SetShowStatusInfo();
 private:
 	Ui::CFmMain				ui;					/*\ ui界面操作 \*/
 	SSvrInfo				m_opSvrInfo;		/*\ 存储服务信息 \*/

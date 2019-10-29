@@ -192,7 +192,7 @@ void CFmChangeUser::BtnOkClickSlot()
 		}
 	}
 
-	CHikHandle::GetInstance()->MenJinChangeUserInfo(m_vecMenJinInfo, 
+	CHikHandle::GetInstance()->MenJinChangeUserInfo(m_vecMenJinInfo,
 		oUserInfo.m_qsUserCardNum, oUserInfo);
 	json.insert("id", m_oUserInfo.m_qsUserId);
 	json.insert("cardNumber", ui.m_editCardNum->text());
@@ -235,10 +235,12 @@ void CFmChangeUser::BtnPicPathClicSlot()
 		fileNames = fileDialog->selectedFiles();
 	}
 	/*\ 保存文件路径 \*/
-	if (fileNames[0] != nullptr)
+	if (fileNames.isEmpty())
 	{
-		m_qsPicPath = fileNames[0];
+		MessageBoxA(nullptr, "请选择图片", "提示", MB_OK | MB_ICONERROR);
+		return;
 	}
+	m_qsPicPath = fileNames[0];
 	/*\ 显示图片到label中 \*/
 	QPixmap pix;
 	QImage* image = new QImage;//filename，图片的路径名字
