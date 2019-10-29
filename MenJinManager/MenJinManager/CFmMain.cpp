@@ -14,6 +14,7 @@
 #include <QList>
 #include <QAbstractItemView>
 #include <thread>
+#include <QMap>
 
 #ifndef _HIKHANDLE_H_
 #include "./CHikHandle.h"
@@ -525,30 +526,21 @@ void CFmMain::BtnChangeUserClickedSlot()
 ****************************************/
 void CFmMain::BtnSyncClickedSlot()
 {
-	/*\ 设置服务信息 \*/
-	m_oHikApi.SetSvrInfo(m_opSvrInfo);
-	/*\ 调用人员下发接口 \*/
-	std::vector<SMenJinSendDownInfo> vecMenJinSuccInfo = m_oHikApi.MenJinUserSendDown(m_vecMenJinInfo, m_vecUserAllInfo);
-	/*\ 显示下发结束 \*/
-	MessageBoxA(nullptr, "人员下发结束", "提示", MB_OK);
-}
-
-/****************************************!
-*@brief  修改tableview中门禁状态信息
-*@author Jinzi
-*@date   2019/10/28 16:13:05
-*@param[in]
-   _qsStatus	:	要显示的状态
-   _iRow		:	行
-   _iColum		:	列
-*@param[out]
-*@return
-****************************************/
-void CFmMain::ChangeTvMenJinStatus(QString _qsStatus, int _iRow, int _iColumn)
-{
-	/*QAbstractItemModel* oModel = ui.m_tvMenJinInfo->model();
-	oModel->setItem(_iRow, _iColumn, new QStandardItem(QString::fromLocal8Bit(_qsStatus.toLocal8Bit().data())));*/
-
+	/*\ 判断门禁主机是否登录成功,未登录完毕，不能使用 \*/
+	if (!ui.m_tvMenJinInfo->verticalHeader()->count())
+	{
+		MessageBoxA(nullptr, "请等待门禁登录", "提示", MB_OK | MB_ICONERROR);
+		return;
+	}
+	else
+	{
+		/*\ 设置服务信息 \*/
+		m_oHikApi.SetSvrInfo(m_opSvrInfo);
+		/*\ 调用人员下发接口 \*/
+		std::vector<SMenJinSendDownInfo> vecMenJinSuccInfo = m_oHikApi.MenJinUserSendDown(m_vecMenJinInfo, m_vecUserAllInfo);
+		/*\ 显示下发结束 \*/
+		MessageBoxA(nullptr, "人员下发结束", "提示", MB_OK);
+	}
 }
 
  /****************************************!
@@ -561,5 +553,6 @@ void CFmMain::ChangeTvMenJinStatus(QString _qsStatus, int _iRow, int _iColumn)
  ****************************************/
 void CFmMain::SetShowStatusInfo()
 {
-
+	QAbstractItemModel* model = ui.m_tvMenJinInfo->model();
+	QModelIndex index = model->index(0, 3);
 }

@@ -52,8 +52,6 @@ public:
 	void GetMenJinInfo();
 	/*\ 显示所有用户数据到table view \*/
 	void ShowAllUserToTV();
-	/*\ 修改门禁下发成功状态 \*/
-	void ChangeTvMenJinStatus(QString _qsStatus, int _iRow, int _iColumn);
 public:
 	/*\ 请求HTTP服务用户存储数据 数据回调调用函数\*/
 	void GetUserInfoCallBack(QNetworkReply* _opReqplay);
