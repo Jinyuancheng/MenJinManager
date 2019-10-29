@@ -358,7 +358,7 @@ bool CHikHandle::MenJinUserSendDownFace(QString& _qsCardNum, int _iLoginHandle, 
 		//delete chpBuf;
 	}
 	/*\ 为了防止后面的图片上传不了 \*/
-	Sleep(1300);
+	Sleep(1500);
 	return bIsSucc;
 }
 
@@ -583,7 +583,7 @@ bool CHikHandle::MenJinLocalPicSendDownFace(QString& _qsCardNum, int _iLoginHand
 		delete chpBuf;
 	}
 	/*\ 为了防止后面的图片上传不了 \*/
-	Sleep(1300);
+	Sleep(1500);
 	return bIsSucc;
 }
 
