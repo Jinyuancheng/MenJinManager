@@ -38,6 +38,8 @@ public:
 	/*\ 显示 未修改前数据 \*/
 	void ShowAfterChangeData();
 public:
+	/*\ 设置门禁信息 \*/
+	void SetMenJinInfo(std::vector<SMenJinInfo> _vecMenJinInfo);
 	/*\ 设置服务器信息 \*/
 	void SetSvrInfo(SSvrInfo _oSvrInfo);
 	/*\ 设置选中用户信息 \*/
@@ -61,6 +63,7 @@ private:
 	QString				m_qsPicPath;        /*\ 图片路径 \*/
 	SUserInfo			m_oUserInfo;        /*\ 用户选中要修改的用户信息 \*/
 	CHttpRequest		m_oHttpInstance;	/*\ 操作http请求 \*/
+	std::vector<SMenJinInfo> m_vecMenJinInfo;/*\ 门禁信息 \*/
 };
 
 #endif

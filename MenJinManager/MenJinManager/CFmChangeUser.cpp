@@ -16,6 +16,10 @@
 #include "../Utils/utils.h"
 #endif
 
+#ifndef _HIKHANDLE_H_
+#include "./CHikHandle.h"
+#endif
+
 CFmChangeUser::CFmChangeUser(QWidget* parent)
 {
 	ui.setupUi(this);
@@ -139,6 +143,9 @@ void CFmChangeUser::SetChangeUserInfo(SUserInfo _oUserInfo)
 void CFmChangeUser::BtnOkClickSlot()
 {
 	bool bIsOwn = false;
+	SUserInfo oUserInfo = { 0 };
+	oUserInfo.m_qsUserId = m_oUserInfo.m_qsUserId;
+	oUserInfo.m_qsUserCardNum = m_oUserInfo.m_qsUserCardNum;
 	if (ui.m_editName->text().isEmpty())
 	{
 		MessageBoxA(nullptr, "请输入必须字段姓名", "提示", MB_OK | MB_ICONERROR);
@@ -147,8 +154,17 @@ void CFmChangeUser::BtnOkClickSlot()
 	if (!ui.m_editJobNum->text().isEmpty())
 	{
 		/*\ 校验用户输入是否合法 \*/
-		CUtils::GetInstance()->JuageNumberLegal(ui.m_editJobNum->text());
+		if (CUtils::GetInstance()->JuageNumberLegal(ui.m_editJobNum->text()))
+		{
+			oUserInfo.m_qsUserJobNum = ui.m_editJobNum->text();
+		}
+		else
+		{
+			MessageBoxA(nullptr, "请输入合法的工号,6-10位,第一位不为0", "提示", MB_OK | MB_ICONERROR);
+			return;
+		}
 	}
+	oUserInfo.m_qsUserName = ui.m_editName->text();
 	/*\	请求数据 \*/
 	QJsonObject json;
 	/*\ 图片的url地址 \*/
@@ -159,6 +175,7 @@ void CFmChangeUser::BtnOkClickSlot()
 	/*\ 说明用户更改了图片（满足条件） \*/
 	if (m_qsPicPath != "")
 	{
+		oUserInfo.m_qsPicPath = m_qsPicPath;
 		/*\ 校验图片是否是一样的 \*/
 		QByteArray oSvrPicData = m_oHttpInstance.HttpGetPicDataWithUrl(qsPicUrl.toLocal8Bit().data());
 		oSvrPicData = oSvrPicData.toBase64();
@@ -174,6 +191,9 @@ void CFmChangeUser::BtnOkClickSlot()
 			json.insert("file", QString(oLocalPicData));
 		}
 	}
+
+	CHikHandle::GetInstance()->MenJinChangeUserInfo(m_vecMenJinInfo, 
+		oUserInfo.m_qsUserCardNum, oUserInfo);
 	json.insert("id", m_oUserInfo.m_qsUserId);
 	json.insert("cardNumber", ui.m_editCardNum->text());
 	json.insert("jobNumber", ui.m_editJobNum->text());
@@ -248,14 +268,14 @@ void CFmChangeUser::BtnQuitClickSlot()
 	this->close();
 }
 
- /****************************************!
- *@brief  更改用户结果处理函数
- *@author Jinzi
- *@date   2019/10/26 19:22:28
- *@param[in]  
- *@param[out] 
- *@return     
- ****************************************/
+/****************************************!
+*@brief  更改用户结果处理函数
+*@author Jinzi
+*@date   2019/10/26 19:22:28
+*@param[in]
+*@param[out]
+*@return
+****************************************/
 void CFmChangeUser::SvrRetChangeUserInfoHandle(QNetworkReply* _opReplay)
 {
 	if (_opReplay == nullptr)
@@ -287,14 +307,14 @@ void CFmChangeUser::SvrRetChangeUserInfoHandle(QNetworkReply* _opReplay)
 	}
 }
 
- /****************************************!
- *@brief  修改 用户信息之前的数据显示
- *@author Jinzi
- *@date   2019/10/26 19:50:14
- *@param[in]  
- *@param[out] 
- *@return     
- ****************************************/
+/****************************************!
+*@brief  修改 用户信息之前的数据显示
+*@author Jinzi
+*@date   2019/10/26 19:50:14
+*@param[in]
+*@param[out]
+*@return
+****************************************/
 void CFmChangeUser::ShowAfterChangeData()
 {
 	ui.m_editName->setText(m_oUserInfo.m_qsUserName);
@@ -314,7 +334,7 @@ void CFmChangeUser::ShowAfterChangeData()
 	//可以在onpaint中 用QPixmap 显示currentPicture，则这种方法则不需要保存
 
 	//显示图片，
-	QMovie *move = new QMovie(filename);
+	QMovie* move = new QMovie(filename);
 	ui.m_lbPic->setMovie(move);
 	move->start();
 
@@ -324,4 +344,18 @@ void CFmChangeUser::ShowAfterChangeData()
 	//ui.m_lbPic->setPixmap(pix.fromImage(image));
 	///*\ 让图片充满整个label \*/
 	//ui.m_lbPic->setScaledContents(true);
+}
+
+/****************************************!
+*@brief  设置门禁信息
+*@author Jinzi
+*@date   2019/10/29 12:07:47
+*@param[in]
+   _vecMenJinInfo	:	门禁信息
+*@param[out]
+*@return
+****************************************/
+void CFmChangeUser::SetMenJinInfo(std::vector<SMenJinInfo> _vecMenJinInfo)
+{
+	m_vecMenJinInfo = _vecMenJinInfo;
 }

@@ -60,7 +60,11 @@ public:
 	bool MenJinUserSendDownFace(QString& _qsCardNum, int _iLoginHandle, QString& _iPicPath);
 	/*\ 根据卡号修改人员信息 \*/
 	std::vector<SMenJinSendDownInfo> MenJinChangeUserInfo(std::vector<SMenJinInfo>& _vecMenJinInfo,
-		std::vector<SUserInfo>& _vecUserInfo);
+		QString _qsCardNum, SUserInfo _oChangeUser);
+	/*\ 根据本地图片进行人脸下发 \*/
+	bool MenJinLocalPicSendDownFace(QString& _qsCardNum, int _iLoginHandle, QString& _iPicPath);
+	/*\ 根据卡号删除人脸信息 \*/
+	bool MenJinDelFaceInfoWithCard(QString _qsCardNum, int _iLoginHandle);
 signals:
 	/*\ 登录成功后发送该信号 \*/
 	void MenJinLoginSucc(std::vector<SMenJinInfo>);

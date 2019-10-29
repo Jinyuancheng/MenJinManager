@@ -332,6 +332,8 @@ void CFmMain::ShowAllMenJinToTV(std::vector<SMenJinInfo> _vecMenJinInfo)
 		//设置字符颜色 
 		opModel->item(i, 0)->setForeground(QBrush(QColor(255, 0, 0)));
 	}
+	/*\ 给修改用户页面赋值 \*/
+	m_fmChangeUser.SetMenJinInfo(m_vecMenJinInfo);
 }
 
 /****************************************!
@@ -485,6 +487,12 @@ void CFmMain::BtnChangeUserClickedSlot()
 	if (iIndex == -1)
 	{
 		MessageBoxA(nullptr, "请选择一个要修改的用户", "提示", MB_OK | MB_ICONERROR);
+		return;
+	}
+	/*\ 请等待门禁登录 \*/
+	if (!ui.m_tvMenJinInfo->verticalHeader()->count())
+	{
+		MessageBoxA(nullptr, "请等待门禁登录", "提示", MB_OK | MB_ICONERROR);
 		return;
 	}
 	/*\ 设置选中的用户信息 \*/

@@ -19,7 +19,7 @@
 *@return
 ****************************************/
 void FuncRemoteConfigCallback(DWORD dwType,
-	void *lpBuffer, DWORD dwBufLen, void *pUserData)
+	void* lpBuffer, DWORD dwBufLen, void* pUserData)
 {
 
 }
@@ -281,8 +281,6 @@ std::vector<SMenJinSendDownInfo> CHikHandle::MenJinUserSendDown(std::vector<SMen
 ****************************************/
 bool CHikHandle::MenJinUserSendDownFace(QString& _qsCardNum, int _iLoginHandle, QString& _iPicPath)
 {
-	/*\ 为了防止后面的图片上传不了 \*/
-	Sleep(1300);
 	bool bIsSucc = false;
 	NET_DVR_FACE_PARAM_COND oStartFaceInfo = { 0 };
 	oStartFaceInfo.dwSize = sizeof(NET_DVR_FACE_PARAM_COND);
@@ -359,6 +357,8 @@ bool CHikHandle::MenJinUserSendDownFace(QString& _qsCardNum, int _iLoginHandle, 
 		bIsSucc = true;
 		//delete chpBuf;
 	}
+	/*\ 为了防止后面的图片上传不了 \*/
+	Sleep(1300);
 	return bIsSucc;
 }
 
@@ -400,8 +400,223 @@ void CHikHandle::SetSvrInfo(SSvrInfo _oSvrInfo)
 *@param[out]
 *@return
 ****************************************/
-std::vector<SMenJinSendDownInfo> CHikHandle::MenJinChangeUserInfo(std::vector<SMenJinInfo>& _vecMenJinInfo, std::vector<SUserInfo>& _vecUserInfo)
+std::vector<SMenJinSendDownInfo> CHikHandle::MenJinChangeUserInfo(
+	std::vector<SMenJinInfo>& _vecMenJinInfo,
+	QString _qsCardNum,
+	SUserInfo _oChangeUser)
 {
-	std::vector<SMenJinSendDownInfo> vecMenJinSuccInfo = this->MenJinUserSendDown(_vecMenJinInfo, _vecUserInfo);
+	std::vector<SMenJinSendDownInfo> vecMenJinSuccInfo;
+	if (_vecMenJinInfo.size() > 0)
+	{
+		for (int i = 0; i < _vecMenJinInfo.size(); i++)
+		{
+			/*\ 门禁信息 \*/
+			SMenJinSendDownInfo oMenJinSendDownInfo;
+			oMenJinSendDownInfo.m_bIsSendDown = false;
+			oMenJinSendDownInfo.m_qsMenJinIp = _vecMenJinInfo[i].m_qsMenJinIp;
+
+			/*\ 人员信息 \*/
+			SUserSendDownInfo oUserSendDownInfo = { 0 };
+			oUserSendDownInfo.m_qsUserId = _oChangeUser.m_qsUserId;
+			oUserSendDownInfo.m_bIsPicSucc = false;
+			oUserSendDownInfo.m_bIsUserSucc = false;
+
+			/*\ 判断门禁主机是否登录成功 \*/
+			if (_vecMenJinInfo[i].m_bIsLogin)
+			{
+				DWORD dwType = 0x00000000;
+				/*\ 建立长连接 \*/
+				NET_DVR_CARD_CFG_COND oCreateLoginInfo = { 0 };
+				/*\ 修改用户信息 \*/
+				NET_DVR_CARD_CFG_V50 oModifyInfo = { 0 };
+				oCreateLoginInfo.dwSize = sizeof(NET_DVR_CARD_CFG_COND);
+				oCreateLoginInfo.dwCardNum = 1;
+				oCreateLoginInfo.byCheckCardNo = 1;
+				/*\ 建立长连接 \*/
+				m_iLongConnHandle = -1;
+				m_iLongConnHandle = NET_DVR_StartRemoteConfig(
+					_vecMenJinInfo[i].m_iLoginHandle,
+					NET_DVR_SET_CARD_CFG_V50,
+					&oCreateLoginInfo,
+					sizeof(NET_DVR_CARD_CFG_COND),
+					nullptr,
+					nullptr
+				);
+				if (m_iLongConnHandle == -1)
+				{
+					continue;
+				}
+
+				/*\ 判断用户都修改了哪些数据 \*/
+				/*\ 修改了工号 \*/
+				if (!_oChangeUser.m_qsUserJobNum.isEmpty())
+				{
+					dwType |= 1 << 10;
+					oModifyInfo.dwEmployeeNo = _oChangeUser.m_qsUserJobNum.toUInt();
+				}
+				/*\ 修改了姓名 \*/
+				if (!_oChangeUser.m_qsUserName.isEmpty())
+				{
+					dwType |= 1 << 11;
+					strcpy((char*)oModifyInfo.byName, _oChangeUser.m_qsUserName.toLocal8Bit().data());
+				}
+				/*\ 给修改了哪个字段的字段赋值 \*/
+				oModifyInfo.dwModifyParamType = dwType;
+				oModifyInfo.dwSize = sizeof(NET_DVR_CARD_CFG_V50);
+				strcpy((char*)oModifyInfo.byCardNo, _oChangeUser.m_qsUserCardNum.toLocal8Bit().data());
+
+				/*\ 修改 \*/
+				if (!NET_DVR_SendRemoteConfig(
+					m_iLongConnHandle,
+					ENUM_ACS_SEND_DATA,
+					(char*)& oModifyInfo,
+					sizeof(NET_DVR_CARD_CFG_V50)
+				))
+				{
+					/*\ 失败 \*/
+					oUserSendDownInfo.m_bIsUserSucc = false;
+					NET_DVR_StopRemoteConfig(m_iLongConnHandle);
+				}
+				else
+				{
+					/*\ 成功 \*/
+					oUserSendDownInfo.m_bIsPicSucc = true;
+					NET_DVR_StopRemoteConfig(m_iLongConnHandle);
+				}
+				/*\ 修改了图片 \*/
+				if (!_oChangeUser.m_qsPicPath.isEmpty())
+				{
+					/*\ 先删除人脸 \*/
+					if (this->MenJinDelFaceInfoWithCard(_qsCardNum, _vecMenJinInfo[i].m_iLoginHandle))
+					{
+						if (this->MenJinLocalPicSendDownFace(_oChangeUser.m_qsUserCardNum,
+							_vecMenJinInfo[i].m_iLoginHandle, _oChangeUser.m_qsPicPath))
+						{
+							oUserSendDownInfo.m_bIsPicSucc = true;
+						}
+					}
+				}
+				oMenJinSendDownInfo.m_vecUserSendDownInfo.push_back(oUserSendDownInfo);
+				vecMenJinSuccInfo.push_back(oMenJinSendDownInfo);
+			}
+			else
+			{
+				oMenJinSendDownInfo.m_vecUserSendDownInfo.push_back(oUserSendDownInfo);
+				vecMenJinSuccInfo.push_back(oMenJinSendDownInfo);
+			}
+			
+		}
+	}
 	return vecMenJinSuccInfo;
+}
+
+/****************************************!
+*@brief  本地图片进行人脸下发
+*@author Jinzi
+*@date   2019/10/29 13:18:57
+*@param[in]
+
+*@param[out]
+*@return
+****************************************/
+bool CHikHandle::MenJinLocalPicSendDownFace(QString& _qsCardNum, int _iLoginHandle, QString& _iPicPath)
+{
+	bool bIsSucc = false;
+	NET_DVR_FACE_PARAM_COND oStartFaceInfo = { 0 };
+	oStartFaceInfo.dwSize = sizeof(NET_DVR_FACE_PARAM_COND);
+	oStartFaceInfo.dwFaceNum = 1;
+	oStartFaceInfo.byFaceID = 1;
+	oStartFaceInfo.byEnableCardReader[0] = 1;
+	strcpy((char*)oStartFaceInfo.byCardNo, _qsCardNum.toLocal8Bit().data());
+	/*\ 建立长连接 \*/
+	m_iLongConnHandle = NET_DVR_StartRemoteConfig(
+		_iLoginHandle,
+		NET_DVR_SET_FACE_PARAM_CFG,
+		&oStartFaceInfo,
+		static_cast<DWORD>(sizeof(NET_DVR_FACE_PARAM_COND)),
+		nullptr,
+		nullptr
+	);
+	if (m_iLongConnHandle == -1)
+	{
+		int iError = NET_DVR_GetLastError();
+		return bIsSucc;
+	}
+	/*\ 发送数据 \*/
+	NET_DVR_FACE_PARAM_CFG oSendFaceInfo = { 0 };
+	oSendFaceInfo.dwSize = sizeof(NET_DVR_FACE_PARAM_CFG);
+	oSendFaceInfo.byFaceDataType = 1;
+	oSendFaceInfo.byFaceID = 1;
+	oSendFaceInfo.byEnableCardReader[0] = 1;
+	/*\ 卡号 \*/
+	strcpy((char*)oSendFaceInfo.byCardNo, _qsCardNum.toLocal8Bit().data());
+	/*\ 读取文件信息 \*/
+	//char chpBuf[200 * 1024] = { 0 };
+	char* chpBuf = new char[200 * 1024];
+	FILE* fileI = fopen(std::string(_iPicPath.toLocal8Bit().data()).c_str(), "rb");
+	if (!fileI)
+	{
+		return bIsSucc;
+	}
+	/*\ 给char*分配内存 \*/
+	int iLength = fread(chpBuf, 1, 200 * 1024, fileI);
+	fclose(fileI);
+	/*\ 赋值 \*/
+	oSendFaceInfo.pFaceBuffer = chpBuf;
+	oSendFaceInfo.dwFaceLen = iLength;
+	/*\ 发送数据 \*/
+	if (!NET_DVR_SendRemoteConfig(
+		m_iLongConnHandle,
+		ENUM_ACS_INTELLIGENT_IDENTITY_DATA,
+		(char*)& oSendFaceInfo,
+		static_cast<DWORD>(sizeof(NET_DVR_FACE_PARAM_CFG))))
+	{
+		int iError = -1;
+		iError = NET_DVR_GetLastError();
+		NET_DVR_StopRemoteConfig(m_iLongConnHandle);
+		delete chpBuf;
+	}
+	else
+	{
+		NET_DVR_StopRemoteConfig(m_iLongConnHandle);
+		bIsSucc = true;
+		delete chpBuf;
+	}
+	/*\ 为了防止后面的图片上传不了 \*/
+	Sleep(1300);
+	return bIsSucc;
+}
+
+ /****************************************!
+ *@brief  根据卡号删除人脸
+ *@author Jinzi
+ *@date   2019/10/29 14:35:19
+ *@param[in]  
+ *@param[out] 
+ *@return     
+ ****************************************/
+bool CHikHandle::MenJinDelFaceInfoWithCard(QString _qsCardNum, int _iLoginHandle)
+{
+	bool bIsSucc = false;
+	NET_DVR_FACE_PARAM_CTRL oDelFaceInfo = { 0 };
+	oDelFaceInfo.dwSize = sizeof(NET_DVR_FACE_PARAM_CTRL);
+	oDelFaceInfo.byMode = 0; /*\ 0根据卡号删除 \*/
+	strcpy((char*)oDelFaceInfo.struProcessMode.struByCard.byCardNo, _qsCardNum.toLocal8Bit().data());
+	oDelFaceInfo.struProcessMode.struByCard.byEnableCardReader[0] = 1;
+	oDelFaceInfo.struProcessMode.struByCard.byFaceID[0] = 1;
+
+	if (!NET_DVR_RemoteControl(
+		_iLoginHandle,
+		NET_DVR_DEL_FACE_PARAM_CFG,
+		&oDelFaceInfo,
+		sizeof(NET_DVR_FACE_PARAM_CTRL)
+	))
+	{
+		return bIsSucc;
+	}
+	else
+	{
+		bIsSucc = true;
+	}
+	return bIsSucc;
 }
