@@ -424,6 +424,16 @@ void CFmMain::BtnDelUserClickedSlot()
 	foreach(const QModelIndex & index, selected)
 	{
 		jsonArray.append(m_vecUserAllInfo[index.row()].m_qsUserId);
+		/*\ …æ≥˝»À¡≥–≈œ¢ \*/
+		for (int i = 0; i < m_vecMenJinInfo.size(); i++)
+		{
+			if (m_vecMenJinInfo[i].m_bIsLogin)
+			{
+				CHikHandle::GetInstance()->MenJinDelFaceInfoWithCard(
+					m_vecUserAllInfo[index.row()].m_qsUserCardNum,
+					m_vecMenJinInfo[i].m_iLoginHandle);
+			}
+		}
 	}
 	QString qsUrl = "http://" + m_opSvrInfo.m_qsSvrIp + ":" + m_opSvrInfo.m_qsSSvrPort + "/patroluser/deletePatroUserList";
 	QJsonObject jsonReqData;
