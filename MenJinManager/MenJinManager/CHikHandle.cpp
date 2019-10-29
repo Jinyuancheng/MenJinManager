@@ -4,10 +4,25 @@
 #include <QCoreApplication>
 #include <iostream>
 #include <QDateTime>
+#include <QMetaType> /*\ 用来发送自定义数据 \*/
 
 #ifndef _UTILS_H_
 #include "../Utils/utils.h"
 #endif
+
+/****************************************!
+*@brief  人脸下发的回调函数
+*@author Jinzi
+*@date   2019/10/29 8:43:57
+*@param[in]
+*@param[out]
+*@return
+****************************************/
+void FuncRemoteConfigCallback(DWORD dwType,
+	void *lpBuffer, DWORD dwBufLen, void *pUserData)
+{
+
+}
 
 /****************************************!
 *@brief  海康回调函数
@@ -52,32 +67,35 @@ CHikHandle::~CHikHandle()
 *@param[out]
 *@return
 ****************************************/
-void CHikHandle::MenJinLogin(std::vector<SMenJinInfo>& _vecMenJinInfo)
+void CHikHandle::MenJinLogin(std::vector<SMenJinInfo> _vecMenJinInfo)
 {
+	std::vector<SMenJinInfo> vecMenJinInfo = _vecMenJinInfo;
 	bool bOk;
 	NET_DVR_USER_LOGIN_INFO oLoginInfo = { 0 };
 	NET_DVR_DEVICEINFO_V40 oDevInfo = { 0 };
-	if (_vecMenJinInfo.size() > 0)
+	if (vecMenJinInfo.size() > 0)
 	{
-		for (int i = 0; i < _vecMenJinInfo.size(); i++)
+		for (int i = 0; i < vecMenJinInfo.size(); i++)
 		{
 			/*\ 登录ip \*/
-			strcpy(oLoginInfo.sDeviceAddress, _vecMenJinInfo[i].m_qsMenJinIp.toLatin1().data());
+			strcpy(oLoginInfo.sDeviceAddress, vecMenJinInfo[i].m_qsMenJinIp.toLatin1().data());
 			/*\ 登录端口 \*/
-			oLoginInfo.wPort = _vecMenJinInfo[i].m_qsMenJinPort.toUShort(&bOk, 10);
+			oLoginInfo.wPort = vecMenJinInfo[i].m_qsMenJinPort.toUShort(&bOk, 10);
 			/*\ 用户名密码 \*/
-			strcpy(oLoginInfo.sUserName, _vecMenJinInfo[i].m_qsMenJinUser.toLatin1().data());
-			strcpy(oLoginInfo.sPassword, _vecMenJinInfo[i].m_qsMenJinPass.toLatin1().data());
+			strcpy(oLoginInfo.sUserName, vecMenJinInfo[i].m_qsMenJinUser.toLatin1().data());
+			strcpy(oLoginInfo.sPassword, vecMenJinInfo[i].m_qsMenJinPass.toLatin1().data());
 			oLoginInfo.bUseAsynLogin = FALSE;
 			oLoginInfo.byLoginMode = 0;
 			/*\ 进行登录 \*/
-			_vecMenJinInfo[i].m_iLoginHandle = NET_DVR_Login_V40(&oLoginInfo, &oDevInfo);
+			vecMenJinInfo[i].m_iLoginHandle = NET_DVR_Login_V40(&oLoginInfo, &oDevInfo);
 			int iError = NET_DVR_GetLastError();
-			if (_vecMenJinInfo[i].m_iLoginHandle >= 0)
+			if (vecMenJinInfo[i].m_iLoginHandle >= 0)
 			{
-				_vecMenJinInfo[i].m_bIsLogin = true;
+				vecMenJinInfo[i].m_bIsLogin = true;
 			}
 		}
+		/*\ 发送信号 \*/
+		emit MenJinLoginSucc(vecMenJinInfo);
 	}
 }
 
@@ -278,7 +296,7 @@ bool CHikHandle::MenJinUserSendDownFace(QString& _qsCardNum, int _iLoginHandle, 
 		NET_DVR_SET_FACE_PARAM_CFG,
 		&oStartFaceInfo,
 		static_cast<DWORD>(sizeof(NET_DVR_FACE_PARAM_COND)),
-		nullptr,
+		(fRemoteConfigCallback)FuncRemoteConfigCallback,
 		nullptr
 	);
 	if (m_iLongConnHandle == -1)

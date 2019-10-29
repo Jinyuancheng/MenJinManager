@@ -52,8 +52,6 @@ public:
 	void GetMenJinInfo();
 	/*\ 显示所有用户数据到table view \*/
 	void ShowAllUserToTV();
-	/*\ 显示所有门禁信息到table view\*/
-	void ShowAllMenJinToTV();
 	/*\ 修改门禁下发成功状态 \*/
 	void ChangeTvMenJinStatus(QString _qsStatus, int _iRow, int _iColumn);
 public:
@@ -67,6 +65,8 @@ public:
 	/*\ 设置服务信息 \*/
 	void SetSvrInfo(SSvrInfo _SvrInfo);
 public slots:
+	/*\ 显示所有门禁信息到table view\*/
+	void ShowAllMenJinToTV(std::vector<SMenJinInfo> _vecMenJinInfo);
 	/*\ 添加用户按钮点击事件 \*/
 	void BtnAddUserClickedSlot();
 	/*\ 删除用户按钮点击事件 \*/

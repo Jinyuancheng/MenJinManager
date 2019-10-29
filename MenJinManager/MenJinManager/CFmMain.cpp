@@ -13,6 +13,7 @@
 #include <QModelIndexList>
 #include <QList>
 #include <QAbstractItemView>
+#include <thread>
 
 #ifndef _HIKHANDLE_H_
 #include "./CHikHandle.h"
@@ -82,6 +83,9 @@ void CFmMain::BindSignalAndSlot()
 	connect(ui.m_btnChangeUser, &QPushButton::clicked, this, &CFmMain::BtnChangeUserClickedSlot);
 	/*\ 同步按钮点击事件 \*/
 	connect(ui.m_btnSync, &QPushButton::clicked, this, &CFmMain::BtnSyncClickedSlot);
+	/*\ 绑定登录成功的信号 \*/
+	QObject::connect(&m_oHikApi, SIGNAL(MenJinLoginSucc(std::vector<SMenJinInfo>)),
+		this, SLOT(ShowAllMenJinToTV(std::vector<SMenJinInfo>)), Qt::DirectConnection);
 }
 /****************************************!
 *@brief  初始化成员变量
@@ -266,8 +270,13 @@ void CFmMain::ShowAllUserToTV()
 *@param[out]
 *@return
 ****************************************/
-void CFmMain::ShowAllMenJinToTV()
+void CFmMain::ShowAllMenJinToTV(std::vector<SMenJinInfo> _vecMenJinInfo)
 {
+	if (m_vecMenJinInfo.size() > 0)
+	{
+		m_vecMenJinInfo.clear();
+	}
+	m_vecMenJinInfo = _vecMenJinInfo;
 	if (m_vecMenJinInfo.size() < 0)
 	{
 		MessageBoxA(nullptr, "查询所有门禁信息失败", "提示", MB_OK | MB_ICONERROR);
@@ -366,10 +375,12 @@ void CFmMain::GetMenJinInfoCallBack(QNetworkReply* _opReqplay)
 			m_vecMenJinInfo.push_back(*opMenJinInfo);
 		}
 	}
+	std::thread oThread(std::bind(&CHikHandle::MenJinLogin, &m_oHikApi, std::placeholders::_1), m_vecMenJinInfo);
+	oThread.detach();
 	/*\ 进行门禁登录 \*/
-	CHikHandle::GetInstance()->MenJinLogin(m_vecMenJinInfo);
+	//CHikHandle::GetInstance()->MenJinLogin(m_vecMenJinInfo);
 	/*\ 显示门禁信息 \*/
-	this->ShowAllMenJinToTV();
+	//this->ShowAllMenJinToTV();
 }
 
 /****************************************!
@@ -501,18 +512,18 @@ void CFmMain::BtnSyncClickedSlot()
 	MessageBoxA(nullptr, "人员下发结束", "提示", MB_OK);
 }
 
- /****************************************!
- *@brief  修改tableview中门禁状态信息
- *@author Jinzi
- *@date   2019/10/28 16:13:05
- *@param[in]  
-	_qsStatus	:	要显示的状态
-	_iRow		:	行
-	_iColum		:	列
- *@param[out] 
- *@return     
- ****************************************/
-void CFmMain::ChangeTvMenJinStatus(QString _qsStatus,int _iRow,int _iColumn)
+/****************************************!
+*@brief  修改tableview中门禁状态信息
+*@author Jinzi
+*@date   2019/10/28 16:13:05
+*@param[in]
+   _qsStatus	:	要显示的状态
+   _iRow		:	行
+   _iColum		:	列
+*@param[out]
+*@return
+****************************************/
+void CFmMain::ChangeTvMenJinStatus(QString _qsStatus, int _iRow, int _iColumn)
 {
 	/*QAbstractItemModel* oModel = ui.m_tvMenJinInfo->model();
 	oModel->setItem(_iRow, _iColumn, new QStandardItem(QString::fromLocal8Bit(_qsStatus.toLocal8Bit().data())));*/

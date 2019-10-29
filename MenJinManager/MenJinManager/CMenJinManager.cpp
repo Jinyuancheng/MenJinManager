@@ -104,8 +104,8 @@ void CMenJinManager::BtnOkClickSlotFunc()
 	/*\ 得到服务器中存储的用户信息，保存并显示 \*/
 	m_opFmMain->GetUserInfo();
 	/*\ 得到服务器中门禁的信息 保存 登录并显示 \*/
-	//std::thread oThread(std::bind(&CFmMain::GetMenJinInfo, m_opFmMain));
-	//oThread.join();
+	/*std::thread oThread(std::bind(&CFmMain::GetMenJinInfo, m_opFmMain));
+	oThread.join();*/
 	m_opFmMain->GetMenJinInfo();
 	this->close();
 }

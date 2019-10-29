@@ -82,6 +82,9 @@
     <QtMoc Include="MenJinManager\CFmChangeUser.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="MenJinManager\CHikHandle.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="uic\ui_CMenJinManager.h">
@@ -112,9 +115,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="HIKSDK\plaympeg4.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MenJinManager\CHikHandle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="uic\ui_fmAddUser.h">

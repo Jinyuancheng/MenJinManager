@@ -245,7 +245,6 @@ void CFmAddUser::SetSvrInfo(SSvrInfo _SvrInfo)
 ****************************************/
 void CFmAddUser::SvrRetAddUserInfoHandle(QNetworkReply* _opReplay)
 {
-	bool bOk;
 	if (_opReplay == nullptr)
 	{
 		MessageBoxA(nullptr, "服务器响应数据为空", "提示", MB_OK | MB_ICONWARNING);

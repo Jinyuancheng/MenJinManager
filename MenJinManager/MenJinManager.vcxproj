@@ -70,6 +70,8 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <AdditionalIncludeDirectories>E:\QT_5.12.3\5.12.3\msvc2017\include\QtCore;E:\QT_5.12.3\5.12.3\msvc2017\include\QtNetwork;E:\QT_5.12.3\5.12.3\msvc2017\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <WarningLevel>Level2</WarningLevel>
+      <PreprocessorDefinitions>$(Qt_DEFINES_);%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -89,6 +91,8 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <AdditionalIncludeDirectories>E:\QT_5.12.3\5.12.3\msvc2017\include\QtCore;E:\QT_5.12.3\5.12.3\msvc2017\include\QtNetwork;E:\QT_5.12.3\5.12.3\msvc2017\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <WarningLevel>Level2</WarningLevel>
+      <PreprocessorDefinitions>$(Qt_DEFINES_);%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -127,7 +131,7 @@
     <QtMoc Include="MenJinManager\CFmMain.h" />
     <QtMoc Include="MenJinManager\CFmAddUser.h" />
     <QtMoc Include="MenJinManager\CFmChangeUser.h" />
-    <ClInclude Include="MenJinManager\CHikHandle.h" />
+    <QtMoc Include="MenJinManager\CHikHandle.h" />
     <ClInclude Include="HIKSDK\DataType.h" />
     <ClInclude Include="HIKSDK\DecodeCardSdk.h" />
     <ClInclude Include="HIKSDK\HCNetSDK.h" />
