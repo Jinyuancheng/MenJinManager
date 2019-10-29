@@ -243,7 +243,8 @@ void CFmMain::ShowAllUserToTV()
 	ui.m_tvUserInfo->verticalHeader()->sectionResizeMode(QHeaderView::Stretch);
 	/*\ 设置只读 \*/
 	ui.m_tvUserInfo->setEditTriggers(QAbstractItemView::NoEditTriggers);
-
+	/*\ 设置选中为选中行 \*/
+	ui.m_tvUserInfo->setSelectionBehavior(QAbstractItemView::SelectRows);
 	for (int i = 0; i < m_vecUserAllInfo.size(); i++)
 	{
 		/*\ 卡号 \*/
@@ -304,6 +305,8 @@ void CFmMain::ShowAllMenJinToTV(std::vector<SMenJinInfo> _vecMenJinInfo)
 	ui.m_tvMenJinInfo->verticalHeader()->sectionResizeMode(QHeaderView::Stretch);
 	/*\ 设置只读 \*/
 	ui.m_tvMenJinInfo->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	/*\ 设置选中为选中行 \*/
+	ui.m_tvMenJinInfo->setSelectionBehavior(QAbstractItemView::SelectRows);
 	for (int i = 0; i < m_vecMenJinInfo.size(); i++)
 	{
 		/*\ 站点名称 \*/
