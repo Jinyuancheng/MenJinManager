@@ -17,6 +17,8 @@
 
 /*\ 用来调用CFmMain中的 GetUserInfo函数 \*/
 typedef std::function<void(void)>	FuncGetUserInfo;
+/*\ 用来调用CFmMain中的 SetShowStatusInfo函数 \*/
+typedef std::function<void(std::vector<SMenJinSendDownInfo>)> FuncSetShowStatusInfo;
 
 class CFmChangeUser :
 	public QMainWindow
@@ -56,7 +58,9 @@ public slots:
 	void BtnQuitClickSlot();
 public:
 	/*\  用来调用CFmMain中的 GetUserInfo函数  \*/
-	FuncGetUserInfo		m_funcGetUserInfo;
+	FuncGetUserInfo			m_funcGetUserInfo;
+	/*\ 用来调用CFmMain中的 SetShowStatusInfo函数 \*/
+	FuncSetShowStatusInfo	m_funcSetShowStatusInfo;
 private:
 	Ui::CFmChangeUser	ui;			        /*\ 操作ui的句柄 \*/
 	SSvrInfo			m_oSvrInfo;	        /*\ 存储服务器信息 \*/

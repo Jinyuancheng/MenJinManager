@@ -52,6 +52,8 @@ void CFmMain::InitMemberFunc()
 {
 	m_fmAddUser.m_funcGetUserInfo = std::bind(&CFmMain::GetUserInfo, this);
 	m_fmChangeUser.m_funcGetUserInfo = std::bind(&CFmMain::GetUserInfo, this);
+	m_fmChangeUser.m_funcSetShowStatusInfo = std::bind(&CFmMain::SetShowStatusInfo,
+		this, std::placeholders::_1);
 }
 
 /****************************************!

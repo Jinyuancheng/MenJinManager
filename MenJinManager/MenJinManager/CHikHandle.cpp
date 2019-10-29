@@ -420,7 +420,7 @@ std::vector<SMenJinSendDownInfo> CHikHandle::MenJinChangeUserInfo(
 		{
 			/*\ 门禁信息 \*/
 			SMenJinSendDownInfo oMenJinSendDownInfo;
-			oMenJinSendDownInfo.m_bIsSendDown = false;
+			oMenJinSendDownInfo.m_bIsSendDown = true;
 			oMenJinSendDownInfo.m_qsMenJinIp = _vecMenJinInfo[i].m_qsMenJinIp;
 
 			/*\ 人员信息 \*/
@@ -452,6 +452,7 @@ std::vector<SMenJinSendDownInfo> CHikHandle::MenJinChangeUserInfo(
 				);
 				if (m_iLongConnHandle == -1)
 				{
+					oMenJinSendDownInfo.m_bIsSendDown = false;
 					continue;
 				}
 
@@ -483,6 +484,7 @@ std::vector<SMenJinSendDownInfo> CHikHandle::MenJinChangeUserInfo(
 				{
 					/*\ 失败 \*/
 					oUserSendDownInfo.m_bIsUserSucc = false;
+					oMenJinSendDownInfo.m_bIsSendDown = false;
 					NET_DVR_StopRemoteConfig(m_iLongConnHandle);
 				}
 				else
@@ -502,6 +504,10 @@ std::vector<SMenJinSendDownInfo> CHikHandle::MenJinChangeUserInfo(
 						{
 							oUserSendDownInfo.m_bIsPicSucc = true;
 						}
+						else
+						{
+							oMenJinSendDownInfo.m_bIsSendDown = false;
+						}
 					}
 				}
 				oMenJinSendDownInfo.m_vecUserSendDownInfo.push_back(oUserSendDownInfo);
@@ -509,6 +515,7 @@ std::vector<SMenJinSendDownInfo> CHikHandle::MenJinChangeUserInfo(
 			}
 			else
 			{
+				oMenJinSendDownInfo.m_bIsSendDown = false;
 				oMenJinSendDownInfo.m_vecUserSendDownInfo.push_back(oUserSendDownInfo);
 				vecMenJinSuccInfo.push_back(oMenJinSendDownInfo);
 			}

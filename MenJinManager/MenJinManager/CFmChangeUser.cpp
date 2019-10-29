@@ -192,8 +192,16 @@ void CFmChangeUser::BtnOkClickSlot()
 		}
 	}
 
-	CHikHandle::GetInstance()->MenJinChangeUserInfo(m_vecMenJinInfo,
-		oUserInfo.m_qsUserCardNum, oUserInfo);
+	/*\ 修改门禁中的用户 \*/
+	std::vector<SMenJinSendDownInfo> vecMenJinSendDownInfo = 
+		CHikHandle::GetInstance()->MenJinChangeUserInfo(m_vecMenJinInfo,oUserInfo.m_qsUserCardNum, oUserInfo);
+
+	/*\ 调用主窗体中的显示状态函数 \*/
+	if (m_funcSetShowStatusInfo != nullptr)
+	{
+		m_funcSetShowStatusInfo(vecMenJinSendDownInfo);
+	}
+
 	json.insert("id", m_oUserInfo.m_qsUserId);
 	json.insert("cardNumber", ui.m_editCardNum->text());
 	json.insert("jobNumber", ui.m_editJobNum->text());
