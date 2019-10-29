@@ -74,7 +74,7 @@ public slots:
 	/*\ 同步按钮点击事件 \*/
 	void BtnSyncClickedSlot();
 	/*\ 设置显示状态信息 \*/
-	void SetShowStatusInfo();
+	void SetShowStatusInfo(std::vector<SMenJinSendDownInfo> _vecMenJinSendDownInfo);
 private:
 	Ui::CFmMain				ui;					/*\ ui界面操作 \*/
 	SSvrInfo				m_opSvrInfo;		/*\ 存储服务信息 \*/

@@ -161,10 +161,11 @@ std::vector<SMenJinSendDownInfo> CHikHandle::MenJinUserSendDown(std::vector<SMen
 	{
 		SMenJinSendDownInfo oMenJinSendDownInfo = { 0 };
 		oMenJinSendDownInfo.m_qsMenJinIp = _vecMenJinInfo[i].m_qsMenJinIp;
-		oMenJinSendDownInfo.m_bIsSendDown = false;
+		oMenJinSendDownInfo.m_bIsSendDown = true;
 		/*\ 判断只有登录成功的门禁才下发 \*/
 		if (_vecMenJinInfo[i].m_bIsLogin)
 		{
+			/*\ 下发用户 \*/
 			for (int j = 0; j < _vecUserInfo.size(); j++)
 			{
 				/*\ 将用户id添加进去 \*/
@@ -188,7 +189,7 @@ std::vector<SMenJinSendDownInfo> CHikHandle::MenJinUserSendDown(std::vector<SMen
 				if (m_iLongConnHandle == -1)
 				{
 					int iError = NET_DVR_GetLastError();
-					MessageBoxA(nullptr, "错误码 : " + iError, "提示", MB_OK | MB_ICONERROR);
+					oMenJinSendDownInfo.m_bIsSendDown = false;
 					continue;
 				}
 				/*\ 下发卡信息 \*/
@@ -232,12 +233,14 @@ std::vector<SMenJinSendDownInfo> CHikHandle::MenJinUserSendDown(std::vector<SMen
 						delete opSendCardInfo;
 						opSendCardInfo = nullptr;
 					}
+					NET_DVR_StopRemoteConfig(m_iLongConnHandle);
 					int iError = NET_DVR_GetLastError();
 					if (opSendCardInfo != nullptr)
 					{
 						delete opSendCardInfo;
 						opSendCardInfo = nullptr;
 					}
+					oMenJinSendDownInfo.m_bIsSendDown = false;
 					continue;
 				}
 				else
@@ -255,6 +258,10 @@ std::vector<SMenJinSendDownInfo> CHikHandle::MenJinUserSendDown(std::vector<SMen
 					{
 						oUserSendDownInfo.m_bIsPicSucc = true;
 					}
+					else
+					{
+						oMenJinSendDownInfo.m_bIsSendDown = false;
+					}
 				}
 				oMenJinSendDownInfo.m_vecUserSendDownInfo.push_back(oUserSendDownInfo);
 			}
@@ -262,6 +269,7 @@ std::vector<SMenJinSendDownInfo> CHikHandle::MenJinUserSendDown(std::vector<SMen
 		}
 		else
 		{
+			oMenJinSendDownInfo.m_bIsSendDown = false;
 			vecMenJinSendDownInfo.push_back(oMenJinSendDownInfo);
 		}
 	}

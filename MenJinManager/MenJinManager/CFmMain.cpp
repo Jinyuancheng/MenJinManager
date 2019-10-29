@@ -11,6 +11,7 @@
 #include <QJsonArray>
 #include <thread>
 #include <QModelIndexList>
+#include <QModelIndex>
 #include <QList>
 #include <QAbstractItemView>
 #include <thread>
@@ -538,6 +539,7 @@ void CFmMain::BtnSyncClickedSlot()
 		m_oHikApi.SetSvrInfo(m_opSvrInfo);
 		/*\ 调用人员下发接口 \*/
 		std::vector<SMenJinSendDownInfo> vecMenJinSuccInfo = m_oHikApi.MenJinUserSendDown(m_vecMenJinInfo, m_vecUserAllInfo);
+		SetShowStatusInfo(vecMenJinSuccInfo);
 		/*\ 显示下发结束 \*/
 		MessageBoxA(nullptr, "人员下发结束", "提示", MB_OK);
 	}
@@ -551,8 +553,20 @@ void CFmMain::BtnSyncClickedSlot()
  *@param[out] 
  *@return     
  ****************************************/
-void CFmMain::SetShowStatusInfo()
+void CFmMain::SetShowStatusInfo(std::vector<SMenJinSendDownInfo> _vecMenJinSendDownInfo)
 {
-	QAbstractItemModel* model = ui.m_tvMenJinInfo->model();
-	QModelIndex index = model->index(0, 3);
+	QStandardItemModel* model = (QStandardItemModel*)ui.m_tvMenJinInfo->model();
+	for (int i = 0; i < _vecMenJinSendDownInfo.size(); i++)
+	{
+		if (_vecMenJinSendDownInfo[i].m_bIsSendDown)
+		{
+			model->setItem(i, 3, new QStandardItem(QString::fromLocal8Bit("成功")));
+		}
+		else
+		{
+			model->setItem(i, 3, new QStandardItem(QString::fromLocal8Bit("失败")));
+		}
+	}
+
+	
 }
