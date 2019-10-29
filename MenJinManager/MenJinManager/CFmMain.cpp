@@ -563,10 +563,14 @@ void CFmMain::SetShowStatusInfo(std::vector<SMenJinSendDownInfo> _vecMenJinSendD
 		if (_vecMenJinSendDownInfo[i].m_bIsSendDown)
 		{
 			model->setItem(i, 3, new QStandardItem(QString::fromLocal8Bit("成功")));
+			//设置字符位置 居中
+			model->item(i, 3)->setTextAlignment(Qt::AlignCenter);
 		}
 		else
 		{
 			model->setItem(i, 3, new QStandardItem(QString::fromLocal8Bit("失败")));
+			//设置字符位置 居中
+			model->item(i, 3)->setTextAlignment(Qt::AlignCenter);
 		}
 	}
 
