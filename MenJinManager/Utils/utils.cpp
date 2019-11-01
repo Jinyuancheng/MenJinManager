@@ -174,7 +174,7 @@ bool CUtils::JuagePortLegal(QString& _qsPort)
 *@param[in]
    _qsNumber	:	要比对的数字
 *@param[out]
-*@return     true 合法 false 不合法
+*@return     true 合法 false 不合法 
 ****************************************/
 bool CUtils::JuageNumberLegal(QString& _qsNumber)
 {
