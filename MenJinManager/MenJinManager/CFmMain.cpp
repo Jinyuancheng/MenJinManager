@@ -573,6 +573,4 @@ void CFmMain::SetShowStatusInfo(std::vector<SMenJinSendDownInfo> _vecMenJinSendD
 			model->item(i, 3)->setTextAlignment(Qt::AlignCenter);
 		}
 	}
-
-	
 }
